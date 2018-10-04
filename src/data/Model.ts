@@ -1,10 +1,8 @@
-import { IDebugger } from 'debug'
-
-import { Database } from './Database'
-
 import { getLog } from '../Logger'
 const debug = getLog(`Model`)
 debug
+
+import { Database } from './Database'
 
 /**
  * I am the abstract data model that can be extended to produce an object that
@@ -24,32 +22,27 @@ debug
 export abstract class Model<A, T> {
   /** A chain over the database table that the other methods will complete. */
   protected get table() {
-    this.log(`Table> Name=%O`, this.relationName)
     return this.database.get(this.relationName)
   }
-
-  protected log: IDebugger
 
   constructor(
     protected relationName: string,
     protected database: Database
-  ) {
-    this.log = getLog(`Table:${relationName}`)
-  }
+  ) { }
 
   async getAll(): Promise<T[]> {
-    this.log(`Get all>`)
+    debug(`Get all>`)
     return (await this.table).value()
   }
 
   async getById(id: number): Promise<T> {
-    this.log(`Get by ID> ID=%O`, id)
+    debug(`Get by ID> ID=%O`, id)
     return (await this.table)
       // @ts-ignore: Doesn't exist on standard lodash wrapper.
       .getById(id)
       .thru((x: any) => this.instantiate(x))
       .tap((x: any) => {
-        this.log(`Get by ID> x=%O`, x)
+        debug(`Get by ID> x=%O`, x)
       })
       .value()
   }
@@ -60,12 +53,12 @@ export abstract class Model<A, T> {
   }
 
   protected async insert(data: A): Promise<T> {
-    this.log(`Insert> Data=%O`, data)
+    debug(`Insert> Data=%O`, data)
     const record = (await this.table)
       // @ts-ignore: Doesn't exist on standard lodash wrapper.
       .insert(data)
       .write()
-    this.log(`Insert> Record=%O`, record)
+    debug(`Insert> Record=%O`, record)
     return record
   }
 

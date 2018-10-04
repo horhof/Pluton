@@ -1,3 +1,4 @@
 --require ts-node/register
 --bail
+--exit
 **/*_test.ts

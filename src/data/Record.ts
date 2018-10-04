@@ -1,8 +1,8 @@
-import * as the from 'lodash';
-
 import { getLog } from '../Logger'
 const debug = getLog(`Record`)
 debug
+
+import * as the from 'lodash'
 
 export type Validators = { [name: string]: (x: any) => boolean }
 
@@ -20,9 +20,6 @@ export abstract class Record {
      */
     protected validators: Validators
   ) {
-    debug(`New> Untr=%o`, untrusted)
-    // This is empty when this runs
-    debug(`New> Val=%o`, this.validators)
     this.validate(untrusted)
   }
 
@@ -37,7 +34,6 @@ export abstract class Record {
       .forEach((test: Function, key: string) => {
         const untrustedValue = untrusted[key]
         const propertyValid = test(untrustedValue)
-        debug(`Validate> Untr=%o PropVal=%o`, untrustedValue, propertyValid)
         if (propertyValid)
           this[key] = untrustedValue
       })
