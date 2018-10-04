@@ -47,6 +47,12 @@ export abstract class Model<A, T> {
       .value()
   }
 
+  async getWhere(search: any): Promise<T> {
+    return (await this.table)
+      .filter(search)
+      .value()
+  }
+
   /** I add a record to the data store. */
   async add(data: A): Promise<T> {
     return this.instantiate(await this.insert(data))

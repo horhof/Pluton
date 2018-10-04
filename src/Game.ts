@@ -22,6 +22,7 @@ export class Data extends Database {
     })
     this.users = new Users(this)
     this.fleets = new Fleets(this)
+    this.users.associateFleets(this.fleets)
   }
 }
 

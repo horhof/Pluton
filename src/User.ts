@@ -5,6 +5,7 @@ import { Record } from './data/Record'
 import { Model } from './data/Model'
 
 import { getLog } from './Logger'
+import { Fleets } from './Fleet';
 const debug = getLog(`Fleet`)
 debug
 
@@ -23,8 +24,15 @@ export class User extends Record implements IUser {
 }
 
 export class Users extends Model<IUser, User> {
+  // @ts-ignore
+  private fleets: Fleets
+
   constructor(database: Database) {
     super('users', database)
+  }
+
+  associateFleets(fleets: Fleets) {
+    this.fleets = fleets
   }
 
   protected instantiate(untrusted: any) {
