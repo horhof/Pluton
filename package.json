@@ -22,7 +22,7 @@
   },
   "scripts": {
     "compile": "tsc",
-    "start": "tsc && node build/main",
+    "start": "tsc && node build/",
     "test": "tsc && mocha",
     "watch": "mocha --watch --watch-extensions ts"
   }
