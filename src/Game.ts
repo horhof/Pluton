@@ -7,9 +7,10 @@ import * as the from 'lodash'
 import * as restify from 'restify'
 
 import { Database } from './data/Database'
-import { Fleets } from './Fleet'
-import { Users } from './User'
-import FleetsCtrl from './FleetsCtrl';
+import { Fleets } from './models/Fleet'
+import { Users } from './models/User'
+import FleetsCtrl from './ctrl/FleetsCtrl';
+import UsersCtrl from './ctrl/UsersCtrl';
 
 export class Data extends Database {
   users: Users
@@ -49,6 +50,7 @@ export class Game {
     }));
     */
 
+    this.controllers.users = new UsersCtrl(this.server, this.db.users)
     this.controllers.fleets = new FleetsCtrl(this.server, this.db.fleets)
 
     debug(`New> Done.`);

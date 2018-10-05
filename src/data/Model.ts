@@ -40,10 +40,7 @@ export abstract class Model<A, T> {
     return (await this.table)
       // @ts-ignore: Doesn't exist on standard lodash wrapper.
       .getById(id)
-      .thru((x: any) => this.instantiate(x))
-      .tap((x: any) => {
-        debug(`Get by ID> x=%O`, x)
-      })
+      .thru((x: any) => x && this.instantiate(x))
       .value()
   }
 

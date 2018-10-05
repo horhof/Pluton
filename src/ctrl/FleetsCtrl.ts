@@ -1,10 +1,10 @@
-import { getLog } from './Logger'
+import { getLog } from '../Logger'
 const debug = getLog(`Ctrl:Fleets`)
 debug
 
 import * as restify from 'restify'
 import { Request as Req, Response as Res } from 'restify'
-import { Fleets } from './Fleet';
+import { Fleets } from '../models/Fleet';
 
 export default class FleetsCtrl {
   constructor(

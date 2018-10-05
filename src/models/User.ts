@@ -1,13 +1,13 @@
+import { getLog } from '../Logger'
+const debug = getLog(`User`)
+debug
+
 import * as the from 'lodash'
 
-import { Database } from './data/Database'
-import { Record } from './data/Record'
-import { Model } from './data/Model'
-
-import { getLog } from './Logger'
+import { Database } from '../data/Database'
+import { Record } from '../data/Record'
+import { Model } from '../data/Model'
 import { Fleets } from './Fleet';
-const debug = getLog(`Fleet`)
-debug
 
 interface IUser {
   name: string
@@ -29,6 +29,11 @@ export class Users extends Model<IUser, User> {
 
   constructor(database: Database) {
     super('users', database)
+  }
+
+  async createNewUser(name: string) {
+    const user = await this.add({ name })
+    return user
   }
 
   associateFleets(fleets: Fleets) {
