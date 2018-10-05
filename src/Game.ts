@@ -9,6 +9,7 @@ import * as restify from 'restify'
 import { Database } from './data/Database'
 import { Fleets } from './Fleet'
 import { Users } from './User'
+import FleetsCtrl from './FleetsCtrl';
 
 export class Data extends Database {
   users: Users
@@ -31,6 +32,8 @@ export class Game {
 
   server: restify.Server
 
+  private controllers: { [name: string]: any } = {}
+
   constructor() {
     this.db = new Data()
 
@@ -45,6 +48,8 @@ export class Game {
       default: 'index.html'
     }));
     */
+
+    this.controllers.fleets = new FleetsCtrl(this.server, this.db.fleets)
 
     debug(`New> Done.`);
   }
