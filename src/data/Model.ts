@@ -1,4 +1,5 @@
 import { Database } from './Database'
+import { Id } from '../Types';
 
 /**
  * I am the abstract data model that can be extended to produce an object that
@@ -30,7 +31,7 @@ export abstract class Model<Fields, Class> {
     return (await this.table).value()
   }
 
-  async getById(id: number): Promise<Class> {
+  async getById(id: Id): Promise<Class> {
     return (await this.table)
       .getById(id)
       .thru((x: any) => x && this.instantiate(x))
@@ -40,6 +41,13 @@ export abstract class Model<Fields, Class> {
   /** I add a record to the data store. */
   async add(data: Fields): Promise<Class> {
     return this.instantiate(await this.insert(data))
+  }
+
+  async edit(id: Id, data: Fields): Promise<Class> {
+    return (await this.table)
+      .updateById(id, data)
+      .thru((x: any) => x && this.instantiate(x))
+      .value()
   }
 
   protected async insert(data: Fields): Promise<Class> {
