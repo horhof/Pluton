@@ -7,6 +7,7 @@ import * as Fleet from './Fleet'
 import * as User from './User'
 
 export class Database {
+  static RESET = true
   users: User.Users
   fleets: Fleet.Fleets
   private sequelize: sequelize.Sequelize
@@ -27,9 +28,13 @@ export class Database {
     debug(`New> Defining models...`)
     this.users = User.define(this.sequelize)
     this.fleets = Fleet.define(this.sequelize)
+    debug(`New> Associating models...`)
+    this.fleets.belongsTo(this.users)
+    this.users.hasMany(this.fleets)
   }
 
   async start() {
+    if (Database.RESET) await this.sequelize.dropAllSchemas({})
     return this.sequelize.sync()
   }
 }

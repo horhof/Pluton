@@ -14,10 +14,15 @@ export interface User extends IUser {
 export interface Users extends sequelize.Model<User, IUser> {
 }
 
-export function define(db: sequelize.Sequelize) {
-  const model: Users = db.define('users', {
-    name: sequelize.STRING,
-  })
+export const Columns = {
+  name: sequelize.STRING,
+}
 
+const Options = {
+  timestamps: false,
+}
+
+export function define(db: sequelize.Sequelize) {
+  const model: Users = db.define('users', Columns, Options)
   return model
 }

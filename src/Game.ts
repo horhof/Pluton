@@ -5,7 +5,7 @@ import * as restify from 'restify'
 
 import { Database } from './models/Database'
 import { UsersCtrl } from './http/Users'
-//import { Fleets } from './ctrl/Fleet'
+import { FleetsCtrl } from './http/Fleets'
 
 export class Game {
   db: Database
@@ -24,7 +24,7 @@ export class Game {
 
     debug(`New> Loading controllers...`)
     this.controllers.users = new UsersCtrl(this.server, this.db.users)
-    //this.controllers.fleets = new FleetsCtrl(this.server, this.db.fleets)
+    this.controllers.fleets = new FleetsCtrl(this.server, this.db.fleets)
   }
 
   async start() {
