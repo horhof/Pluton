@@ -21,7 +21,7 @@ export class Data extends Database {
   fleets: Fleets
 
   constructor() {
-    super('data/db.json', 'data/defaults.json')
+    super('data/db.json', { defaultsFile: 'data/defaults.json' })
     this.users = new Users(this)
     this.fleets = new Fleets(this)
     this.planets = new Planets(this)
