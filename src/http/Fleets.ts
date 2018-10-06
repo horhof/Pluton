@@ -1,5 +1,5 @@
 import * as restify from 'restify'
-import { Ctrl } from './Controller'
+import { Ctrl } from './Ctrl'
 import * as Fleet from '../models/Fleet'
 
 export class FleetsCtrl extends Ctrl {

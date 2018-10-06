@@ -31,10 +31,10 @@ export class Database {
       },
     });
     debug(`New> Defining models...`)
-    this.users = User.define(this.sequelize)
-    this.ships = Ship.define(this.sequelize)
-    this.fleets = Fleet.define(this.sequelize)
     this.planets = Planet.define(this.sequelize)
+    this.fleets = Fleet.define(this.sequelize)
+    this.users = User.define(this.sequelize, [this.planets, this.fleets])
+    this.ships = Ship.define(this.sequelize)
     debug(`New> Associating models...`)
     this.fleets.belongsTo(this.users) && this.users.hasMany(this.fleets)
     this.planets.belongsTo(this.users) && this.users.hasMany(this.planets)

@@ -6,13 +6,13 @@ import * as restify from 'restify'
 import { Request as Req, Response as Res } from 'restify'
 import * as sequelize from 'sequelize'
 
-export class Ctrl {
+export abstract class Ctrl {
   static URI: string
 
   constructor(
-    private server: restify.Server,
-    private model: sequelize.Model<any, any>,
-    private uri: string
+    protected server: restify.Server,
+    protected model: sequelize.Model<any, any>,
+    protected uri: string
   ) {
     debug(`New> Binding routes... Uri=%o`, this.uri)
     this.server.get(`/${this.uri}`, this.get.bind(this))
@@ -20,12 +20,12 @@ export class Ctrl {
     this.server.post(`/${this.uri}`, this.post.bind(this))
   }
 
-  private get(_: Req, res: Res) {
+  protected get(_: Req, res: Res) {
     debug(`GET /${this.uri}>`)
     this.model.findAll().then(records => res.json(200, records))
   }
 
-  private getId(req: Req, res: Res) {
+  protected getId(req: Req, res: Res) {
     debug(`GET /${this.uri}/:id>`)
     const id = the(req).get('params.id')
     if (!id) return res.json(400, { message: `Not a valid ID: ${id}.` })
@@ -36,7 +36,7 @@ export class Ctrl {
       })
   }
 
-  private post(req: Req, res: Res) {
+  protected post(req: Req, res: Res) {
     debug(`POST /${this.uri}>`)
     const data = the(req).get('body')
     if (!data) return res.json(400, { message: `No data to add.` })
