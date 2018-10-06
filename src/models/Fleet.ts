@@ -8,16 +8,16 @@ import { Database } from '../data/Database'
 import { Record } from '../data/Record'
 import { Model } from '../data/Model'
 
-interface IFleet {
+interface FleetFields {
   name: string
   userId?: string
   mobile?: boolean
-  target?: string
+  targetPlanetId?: string
   moving?: boolean
   travelTime?: number
 }
 
-export class Fleet extends Record implements IFleet {
+export class Fleet extends Record implements FleetFields {
   name: string
 
   userId: string
@@ -26,7 +26,7 @@ export class Fleet extends Record implements IFleet {
   mobile: boolean
 
   /** Which planet is this fleet moving toward or has stopped at? */
-  target: string
+  targetPlanetId: string
 
   /** Is this fleet in transit or arrived at its destination? */
   moving: boolean
@@ -38,14 +38,14 @@ export class Fleet extends Record implements IFleet {
     super(x, {
       name: x => the(x).isString(),
       userId: x => the(x).isString(),
-      target: x => the(x).isString(),
+      targetPlanetId: x => the(x).isString(),
       moving: x => the(x).isBoolean(),
       travelTime: x => the(x).isNumber(),
     })
   }
 }
 
-export class Fleets extends Model<IFleet, Fleet> {
+export class Fleets extends Model<FleetFields, Fleet> {
   constructor(database: Database) {
     super('fleets', database)
   }

@@ -9,12 +9,12 @@ import { Record } from '../data/Record'
 import { Model } from '../data/Model'
 import { Planets, Planet } from './Planet'
 
-interface IUser {
+interface UserFields {
   name: string
   planets?: Planet[]
 }
 
-export class User extends Record implements IUser {
+export class User extends Record implements UserFields {
   name: string
   planets?: Planet[]
 
@@ -26,14 +26,14 @@ export class User extends Record implements IUser {
   }
 }
 
-export class Users extends Model<IUser, User> {
-  // @ts-ignore
+export class Users extends Model<UserFields, User> {
   private planets: Planets
 
   constructor(database: Database) {
     super('users', database)
   }
 
+  /** Create a new user and planet for that user. */
   async createNewUser(name: string) {
     const user = await this.add({ name })
     await this.planets.add({
@@ -46,11 +46,13 @@ export class Users extends Model<IUser, User> {
   async getAll() {
     const users = await super.getAll()
     const _planets = await this.planets.getAll()
-    // @ts-ignore
     return the(users)
       .map(user => {
-        const planets = the(_planets).filter(x => x.userId === user.id)
-        return the(user).assign({ planets }).value()
+        return the(user)
+          .assign({
+            planets: the(_planets).filter(x => x.userId === user.id),
+          })
+          .value()
       })
       .value()
   }

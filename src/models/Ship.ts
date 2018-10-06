@@ -5,29 +5,35 @@ import { Record } from '../data/Record'
 import { Model } from '../data/Model'
 
 import { getLog } from '../Logger'
-const debug = getLog(`Xxx`)
+const debug = getLog(`Ship`)
 debug
 
-interface XxxFields {
+interface ShipFields {
   name: string
+  class: string
+  designation: number
 }
 
-export class Xxx extends Record implements XxxFields {
+export class Ship extends Record implements ShipFields {
   name: string
+  class: string
+  designation: number
 
   constructor(x: any) {
     super(x, {
       name: x => the(x).isString(),
+      class: x => the(x).isString(),
+      designation: x => the(x).isNumber(),
     })
   }
 }
 
-export class Xxxs extends Model<XxxFields, Xxx> {
+export class Ships extends Model<ShipFields, Ship> {
   constructor(database: Database) {
-    super('xxx', database)
+    super('ships', database)
   }
 
   protected instantiate(untrusted: any) {
-    return new Xxx(untrusted)
+    return new Ship(untrusted)
   }
 }

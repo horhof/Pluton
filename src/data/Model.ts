@@ -1,7 +1,3 @@
-import { getLog } from '../Logger'
-const debug = getLog(`Model`)
-debug
-
 import { Database } from './Database'
 
 /**
@@ -17,10 +13,9 @@ import { Database } from './Database'
  * - Instantiate: fields = record
  * - Get all = <list of records>
  * - Get by ID = <[record]>
- * - Get where: search criteria = <[record]>
  * - Add: fields = <record>
  */
-export abstract class Model<A, T> {
+export abstract class Model<Fields, Class> {
   /** A chain over the database table that the other methods will complete. */
   protected get table() {
     return this.database.get(this.relationName)
@@ -31,39 +26,29 @@ export abstract class Model<A, T> {
     protected database: Database
   ) { }
 
-  async getAll(): Promise<T[]> {
-    debug(`Get all>`)
+  async getAll(): Promise<Class[]> {
     return (await this.table).value()
   }
 
-  async getById(id: number): Promise<T> {
-    debug(`Get by ID> ID=%O`, id)
+  async getById(id: number): Promise<Class> {
     return (await this.table)
-      // @ts-ignore: Doesn't exist on standard lodash wrapper.
       .getById(id)
       .thru((x: any) => x && this.instantiate(x))
       .value()
   }
 
-  async getWhere(search: any): Promise<T> {
-    return (await this.table)
-      .filter(search)
-      .value()
-  }
-
   /** I add a record to the data store. */
-  async add(data: A): Promise<T> {
+  async add(data: Fields): Promise<Class> {
     return this.instantiate(await this.insert(data))
   }
 
-  protected async insert(data: A): Promise<T> {
+  protected async insert(data: Fields): Promise<Class> {
     const record = (await this.table)
-      // @ts-ignore: Doesn't exist on standard lodash wrapper.
       .insert(data)
       .write()
     return record
   }
 
   /** Instantiate a record from an untrusted source. */
-  protected abstract instantiate(untrusted: any): T
+  protected abstract instantiate(untrusted: any): Class
 }

@@ -9,12 +9,12 @@ import { Record } from '../data/Record'
 import { Model } from '../data/Model'
 import { Id, isId } from '../Types'
 
-interface IPlanet {
+interface PlanetFields {
   name: string
   userId: Id
 }
 
-export class Planet extends Record implements IPlanet {
+export class Planet extends Record implements PlanetFields {
   name: string
   userId: Id
 
@@ -26,7 +26,7 @@ export class Planet extends Record implements IPlanet {
   }
 }
 
-export class Planets extends Model<IPlanet, Planet> {
+export class Planets extends Model<PlanetFields, Planet> {
   constructor(database: Database) {
     super('planets', database)
   }

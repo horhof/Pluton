@@ -1,6 +1,5 @@
 import { getLog } from '../Logger'
-const debug = getLog(`Ctrl:Users`)
-debug
+const debug = getLog(`Http`)
 
 import * as the from 'lodash'
 import * as restify from 'restify'
@@ -11,7 +10,7 @@ import { Users } from '../models/User'
 export class UsersCtrl {
   constructor(
     private server: restify.Server,
-    private model: Users
+    private model: Users,
   ) {
     this.server.get('/users', this.getUsers.bind(this))
     this.server.get('/users/:id', this.getUsersId.bind(this))
