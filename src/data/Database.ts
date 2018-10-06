@@ -3,9 +3,7 @@ const debug = getLog(`Game`)
 debug
 
 import * as fs from 'fs'
-// @ts-ignore
 import * as LowDb from 'lowdb'
-// @ts-ignore
 import * as FileSync from 'lowdb/adapters/FileSync'
 const lodashId = require('lodash-id')
 
@@ -20,8 +18,7 @@ export interface DatabaseOptions {
  * Models know how to ask me to read / write their data.
  */
 export class Database {
-  // @ts-ignore
-  private instance: LowDb.Lowdb<any, LowDb.AdapterSync<any>>
+  private instance: LowDb.lowdb<any, LowDb.AdapterSync<any>>
 
   constructor(
     private filename: string,
