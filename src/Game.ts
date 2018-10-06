@@ -9,11 +9,14 @@ import * as restify from 'restify'
 import { Database } from './data/Database'
 import { Fleets } from './models/Fleet'
 import { Users } from './models/User'
-import FleetsCtrl from './ctrl/FleetsCtrl';
-import UsersCtrl from './ctrl/UsersCtrl';
+import { Planets } from './models/Planet'
+import { FleetsCtrl } from './ctrl/FleetsCtrl'
+import { UsersCtrl } from './ctrl/UsersCtrl'
 
 export class Data extends Database {
   users: Users
+
+  planets: Planets
 
   fleets: Fleets
 
@@ -21,10 +24,12 @@ export class Data extends Database {
     super('data/db.json', {
       users: [],
       fleets: [],
+      planets: [],
     })
     this.users = new Users(this)
     this.fleets = new Fleets(this)
-    this.users.associateFleets(this.fleets)
+    this.planets = new Planets(this)
+    this.users.associatePlanets(this.planets)
   }
 }
 

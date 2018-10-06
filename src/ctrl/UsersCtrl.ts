@@ -8,22 +8,22 @@ import { Request as Req, Response as Res } from 'restify'
 
 import { Users } from '../models/User'
 
-export default class UsersCtrl {
+export class UsersCtrl {
   constructor(
     private server: restify.Server,
     private model: Users
   ) {
-    this.server.get('/users', this.listUsers.bind(this))
-    this.server.get('/users/:id', this.getUser.bind(this))
-    this.server.post('/users', this.createUser.bind(this))
+    this.server.get('/users', this.getUsers.bind(this))
+    this.server.get('/users/:id', this.getUsersId.bind(this))
+    this.server.post('/users', this.postUsers.bind(this))
     /*
     this.server.put('/users/:id', this.updateUser.bind(this))
     this.server.del('/users/:id', this.deleteUser.bind(this))
     */
   }
 
-  private listUsers(_: Req, res: Res) {
-    debug(`List Users>`)
+  private getUsers(_: Req, res: Res) {
+    debug(`GET /users>`)
     this.model.getAll()
       .then(data => {
         if (data)
@@ -33,8 +33,8 @@ export default class UsersCtrl {
       })
   }
 
-  private getUser(req: Req, res: Res) {
-    debug(`Get User>`)
+  private getUsersId(req: Req, res: Res) {
+    debug(`GET /users/:id>`)
     const { id } = req.params
     this.model.getById(id)
       .then(data => {
@@ -45,15 +45,10 @@ export default class UsersCtrl {
       })
   }
 
-  private createUser(req: Req, res: Res) {
-    debug(`Create user>`)
-    const data = the(req.body)
-      .pick([
-        'name',
-      ])
-      .value()
-
-    this.model.add(data)
+  private postUsers(req: Req, res: Res) {
+    debug(`POST /users>`)
+    const name = the(req).get('body.name')
+    this.model.createNewUser(name)
       .then(data => {
         res.json(200, data)
       })

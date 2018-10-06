@@ -6,7 +6,7 @@ import * as restify from 'restify'
 import { Request as Req, Response as Res } from 'restify'
 import { Fleets } from '../models/Fleet';
 
-export default class FleetsCtrl {
+export class FleetsCtrl {
   constructor(
     private server: restify.Server,
     private model: Fleets

@@ -1,3 +1,7 @@
+import { getLog } from '../Logger'
+const debug = getLog(`Game`)
+debug
+
 // @ts-ignore
 import * as LowDb from 'lowdb'
 // @ts-ignore
@@ -19,6 +23,7 @@ export class Database {
   ) {
     const adapter = new FileSync(this.filename)
     this.instance = LowDb(adapter)
+    lodashId.createId = (collection: any[]): number => collection.length + 1;
     this.instance._.mixin(lodashId)
     this.instance.defaults(defaults).write()
   }
