@@ -6,7 +6,7 @@ import * as the from 'lodash'
 
 import { Record } from '../src/data/Record'
 import { Model } from '../src/data/Model'
-import { Database } from '../src/data/Database';
+import { Database } from '../src/models/Database';
 
 interface TestFields {
   a?: number
