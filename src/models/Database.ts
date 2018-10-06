@@ -7,12 +7,14 @@ import * as Umzug from 'umzug'
 import * as User from './User'
 import * as Ship from './Ship'
 import * as Fleet from './Fleet'
+import * as Planet from './Planet'
 
 export class Database {
   static RESET = true
   users: User.Users
   ships: Ship.Ships
   fleets: Fleet.Fleets
+  planets: Planet.Planets
   private sequelize: sequelize.Sequelize
 
   constructor() {
@@ -32,9 +34,12 @@ export class Database {
     this.users = User.define(this.sequelize)
     this.ships = Ship.define(this.sequelize)
     this.fleets = Fleet.define(this.sequelize)
+    this.planets = Planet.define(this.sequelize)
     debug(`New> Associating models...`)
     this.fleets.belongsTo(this.users) && this.users.hasMany(this.fleets)
+    this.planets.belongsTo(this.users) && this.users.hasMany(this.planets)
   }
+
   private async seed() {
     const umzug = new Umzug({
       storage: 'sequelize',
@@ -47,12 +52,7 @@ export class Database {
         path: 'build/migrations',
       },
     })
-
-    return umzug.pending()
-      .then((pending: Umzug.Migration[]) => {
-        debug(`Migrate> Pending=%o`, pending)
-        return umzug.up()
-      })
+    return umzug.up()
   }
 
   async start() {

@@ -1,13 +1,14 @@
 import sequelize = require('sequelize')
 
-export interface IUser {
+export interface IPlanet {
   name: string
+  userId: number
 }
 
-export interface User extends IUser {
+export interface Planet extends IPlanet {
 }
 
-export interface Users extends sequelize.Model<User, IUser> {
+export interface Planets extends sequelize.Model<Planet, IPlanet> {
 }
 
 export const Columns = {
@@ -19,6 +20,6 @@ const Options = {
 }
 
 export function define(db: sequelize.Sequelize) {
-  const model: Users = db.define('users', Columns, Options)
+  const model: Planets = db.define('planets', Columns, Options)
   return model
 }

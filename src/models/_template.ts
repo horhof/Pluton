@@ -1,7 +1,3 @@
-import { getLog } from '../Logger'
-const debug = getLog('Xxxs')
-debug
-
 import sequelize = require('sequelize')
 
 export interface IXxx {
