@@ -5,39 +5,47 @@ debug
 // @ts-ignore
 import * as the from 'lodash'
 import * as restify from 'restify'
+import * as Sequelize from 'sequelize'
 
-import { Database } from './data/Database'
-import { Fleets } from './models/Fleet'
-import { Users } from './models/User'
-import { Planets } from './models/Planet'
-import { FleetsCtrl } from './ctrl/FleetsCtrl'
-import { UsersCtrl } from './ctrl/UsersCtrl'
+const sequelize = new Sequelize('pluton', 'pluton', 'password', {
+  host: 'localhost',
+  dialect: 'postgres',
 
-export class Data extends Database {
-  users: Users
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  },
 
-  planets: Planets
+  // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
+  operatorsAliases: false
+});
 
-  fleets: Fleets
+const User = sequelize.define('user', {
+  username: Sequelize.STRING,
+  birthday: Sequelize.DATE
+});
 
-  constructor() {
-    super('data/db.json', { defaultsFile: 'data/defaults.json' })
-    this.users = new Users(this)
-    this.fleets = new Fleets(this)
-    this.planets = new Planets(this)
-    this.users.associatePlanets(this.planets)
-  }
-}
+sequelize.sync()
+  .then(() => User.create({
+    username: 'janedoe',
+    birthday: new Date(1980, 6, 20)
+  }))
+  .then(jane => {
+    console.log(jane);
+  });
 
 export class Game {
-  db: Data
+  //db: Data
+  db: any
 
   server: restify.Server
 
-  private controllers: { [name: string]: any } = {}
+  //private controllers: { [name: string]: any } = {}
 
   constructor() {
-    this.db = new Data()
+    //this.db = new Data()
 
     debug(`New> Spinning up server...`)
     this.server = restify.createServer()
@@ -51,8 +59,8 @@ export class Game {
     }));
     */
 
-    this.controllers.users = new UsersCtrl(this.server, this.db.users)
-    this.controllers.fleets = new FleetsCtrl(this.server, this.db.fleets)
+    //this.controllers.users = new UsersCtrl(this.server, this.db.users)
+    //this.controllers.fleets = new FleetsCtrl(this.server, this.db.fleets)
 
     debug(`New> Done.`);
   }
