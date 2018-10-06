@@ -1,10 +1,10 @@
 import * as the from 'lodash'
 
-import { Database } from './data/Database'
-import { Record } from './data/Record'
-import { Model } from './data/Model'
+import { Database } from '../data/Database'
+import { Record } from '../data/Record'
+import { Model } from '../data/Model'
 
-import { getLog } from './Logger'
+import { getLog } from '../Logger'
 const debug = getLog(`Fleet`)
 debug
 
