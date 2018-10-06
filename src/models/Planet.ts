@@ -7,19 +7,21 @@ import * as the from 'lodash'
 import { Database } from '../data/Database'
 import { Record } from '../data/Record'
 import { Model } from '../data/Model'
+import { Id, isId } from '../Types'
 
 interface IPlanet {
   name: string
-  userId: string
+  userId: Id
 }
 
 export class Planet extends Record implements IPlanet {
   name: string
-  userId: string
+  userId: Id
 
   constructor(x: any) {
     super(x, {
       name: x => the(x).isString(),
+      id: isId,
     })
   }
 }

@@ -7,22 +7,18 @@ import * as the from 'lodash'
 import { Database } from '../data/Database'
 import { Record } from '../data/Record'
 import { Model } from '../data/Model'
-import { Id, isId } from '../Types'
 import { Planets } from './Planet'
 
 interface IUser {
   name: string
-  planetId?: Id
 }
 
 export class User extends Record implements IUser {
   name: string
-  planetId?: Id
 
   constructor(x: any) {
     super(x, {
       name: x => the(x).isString(),
-      planetId: isId,
     })
   }
 }
@@ -37,11 +33,10 @@ export class Users extends Model<IUser, User> {
 
   async createNewUser(name: string) {
     const user = await this.add({ name })
-    const planet = await this.planets.add({
+    await this.planets.add({
       name: `${user.name}'s home planet`,
       userId: user.id,
     })
-    user.planetId = planet.id
     return user
   }
 

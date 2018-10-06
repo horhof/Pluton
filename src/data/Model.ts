@@ -16,7 +16,8 @@ import { Database } from './Database'
  * API:
  * - Instantiate: fields = record
  * - Get all = <list of records>
- * - Get by ID = <record>
+ * - Get by ID = <[record]>
+ * - Get where: search criteria = <[record]>
  * - Add: fields = <record>
  */
 export abstract class Model<A, T> {
@@ -56,12 +57,10 @@ export abstract class Model<A, T> {
   }
 
   protected async insert(data: A): Promise<T> {
-    debug(`Insert> Data=%O`, data)
     const record = (await this.table)
       // @ts-ignore: Doesn't exist on standard lodash wrapper.
       .insert(data)
       .write()
-    debug(`Insert> Record=%O`, record)
     return record
   }
 
