@@ -7,18 +7,21 @@ import * as the from 'lodash'
 import { Database } from '../data/Database'
 import { Record } from '../data/Record'
 import { Model } from '../data/Model'
-import { Planets } from './Planet'
+import { Planets, Planet } from './Planet'
 
 interface IUser {
   name: string
+  planets?: Planet[]
 }
 
 export class User extends Record implements IUser {
   name: string
+  planets?: Planet[]
 
   constructor(x: any) {
     super(x, {
       name: x => the(x).isString(),
+      planet: () => true,
     })
   }
 }
@@ -38,6 +41,18 @@ export class Users extends Model<IUser, User> {
       userId: user.id,
     })
     return user
+  }
+
+  async getAll() {
+    const users = await super.getAll()
+    const _planets = await this.planets.getAll()
+    // @ts-ignore
+    return the(users)
+      .map(user => {
+        const planets = the(_planets).filter(x => x.userId === user.id)
+        return the(user).assign({ planets }).value()
+      })
+      .value()
   }
 
   associatePlanets(planets: Planets) {
