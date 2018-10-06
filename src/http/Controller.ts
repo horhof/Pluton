@@ -28,10 +28,10 @@ export class Ctrl {
   private getId(req: Req, res: Res) {
     debug(`GET /${this.uri}/:id>`)
     const id = the(req).get('params.id')
-    if (!id) return res.end(400)
+    if (!id) return res.json(400, { message: `Not a valid ID: ${id}.` })
     this.model.findById(id)
       .then(record => {
-        if (!record) return res.end(404)
+        if (!record) return res.json(404, { message: `Record ${id} couldn't be found.` })
         res.json(200, record)
       })
   }
@@ -39,7 +39,7 @@ export class Ctrl {
   private post(req: Req, res: Res) {
     debug(`POST /${this.uri}>`)
     const data = the(req).get('body')
-    if (!data) return res.end(400)
+    if (!data) return res.json(400, { message: `No data to add.` })
     this.model.create(data).then(record => res.json(200, record))
   }
 }
