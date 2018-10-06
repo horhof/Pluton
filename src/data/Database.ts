@@ -5,11 +5,18 @@ debug
 import * as fs from 'fs'
 import * as LowDb from 'lowdb'
 import * as FileSync from 'lowdb/adapters/FileSync'
+import { Fleet } from '../models/Fleet';
+import { User } from '../models/User';
 const lodashId = require('lodash-id')
 
 export interface DatabaseOptions {
   wipe?: boolean
   defaultsFile?: string
+}
+
+interface Schema {
+  fleets: Fleet[]
+  users: User[]
 }
 
 /**
@@ -18,7 +25,9 @@ export interface DatabaseOptions {
  * Models know how to ask me to read / write their data.
  */
 export class Database {
-  private instance: LowDb.lowdb<any, LowDb.AdapterSync<any>>
+  //private instance: LowDb.lowdb<any, LowDb.AdapterSync<any>>
+  //private instance: LowDb.LowdbSync<any>
+  private instance: LowDb.LowdbSync<Schema>
 
   constructor(
     private filename: string,
