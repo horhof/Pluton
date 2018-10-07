@@ -7,36 +7,61 @@ import * as Fleet from './Fleet'
 import sequelize = require('sequelize')
 
 export interface IUser {
+  id?: number
   name: string
+  email: string
+  password: string
 }
 
 export interface User extends IUser {
+  id: number
 }
 
 export interface Users extends sequelize.Model<User, IUser> {
+  fleets: Fleet.Fleets
+  planets: Planet.Planets
   initUser(data: IUser): Promise<User>
 }
 
 export const Columns = {
-  name: sequelize.STRING,
+  name: {
+    type: sequelize.STRING,
+    allowBlank: false,
+  },
+  email: {
+    type: sequelize.STRING,
+    allowBlank: false,
+  },
+  password: {
+    type: sequelize.STRING,
+    allowBlank: false,
+  },
 }
 
 const Options = {
   timestamps: false,
 }
 
-type UserDeps = [Planet.Planets, Fleet.Fleets]
+type UserDeps = [
+  Planet.Planets,
+  Fleet.Fleets
+]
 
 export function define(db: sequelize.Sequelize, deps: UserDeps) {
-  const [planets, fleets] = deps
-
   const model = <Users>db.define('users', Columns, Options)
+  const [planets, fleets] = deps
+  model.planets = planets
+  model.fleets = fleets
 
   model.initUser = async function(data: IUser) {
     debug(`Init user>`)
     const userName = data.name
-    await fleets.add({ name: `${userName}'s planet` })
-    return this.create(data)
+    const user = await this.create(data)
+    await this.planets.create({
+      name: `${userName}'s planet`,
+      userId: user.id,
+    })
+    return user
   }
 
   return model

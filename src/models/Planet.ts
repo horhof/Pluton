@@ -1,4 +1,4 @@
-import sequelize = require('sequelize')
+import * as sequelize from 'sequelize'
 
 export interface IPlanet {
   name: string
@@ -20,6 +20,6 @@ const Options = {
 }
 
 export function define(db: sequelize.Sequelize) {
-  const model: Planets = db.define('planets', Columns, Options)
+  const model = db.define('planets', Columns, Options) as Planets
   return model
 }

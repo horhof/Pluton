@@ -1,10 +1,11 @@
 import { getLog } from '../Logger'
-const debug = getLog(`Http:Ctrl:Fleet`)
+const debug = getLog(`Models:Fleet`)
 
 import * as the from 'lodash'
-import sequelize = require('sequelize')
+import * as sequelize from 'sequelize'
 
 export interface IFleet {
+  id?: number
   name?: string
   index?: number
   /** Is this fleet a planetary defense fleet or able to be moved? */
@@ -29,7 +30,6 @@ export const Columns = {
   name: {
     type: sequelize.STRING,
     allowNull: false,
-    unique: true,
   },
   index: {
     type: sequelize.INTEGER,

@@ -29,6 +29,7 @@ export class Database {
         acquire: 30000,
         idle: 10000,
       },
+      logging: false,
     });
     debug(`New> Defining models...`)
     this.planets = Planet.define(this.sequelize)
@@ -47,7 +48,7 @@ export class Database {
         sequelize: this.sequelize,
       },
       migrations: {
-        pattern: /^\d+\.js$/,
+        pattern: /^.+\.js$/,
         params: [this.sequelize],
         path: 'build/migrations',
       },
@@ -56,7 +57,10 @@ export class Database {
   }
 
   async start() {
-    if (Database.RESET) await this.sequelize.dropAllSchemas({})
+    if (Database.RESET) {
+      debug(`Start> Dropping schemas...`)
+      await this.sequelize.query(`DROP SCHEMA public CASCADE; CREATE SCHEMA public;`)
+    }
     debug(`Start> Syncing tables...`)
     await this.sequelize.sync()
     debug(`Start> Seeding...`)
