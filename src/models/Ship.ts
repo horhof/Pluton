@@ -1,10 +1,11 @@
-import sequelize = require('sequelize')
+import * as sequelize from 'sequelize'
 
 export interface IShip {
-  class: string
-  designation: number
-  name: string
-  initiative: number
+  id?: number
+  class?: string
+  designation?: number
+  name?: string
+  initiative?: number
 }
 
 export interface Ship extends IShip {
@@ -23,6 +24,13 @@ export enum ShipClass {
 }
 
 export const Columns = {
+  /*
+  id: {
+    type: sequelize.INTEGER,
+    primaryKey: true,
+    allowNull: false,
+  },
+  */
   class: {
     type: sequelize.ENUM(Object.keys(ShipClass)),
     allowNull: false,
@@ -47,6 +55,6 @@ const Options = {
 }
 
 export function define(db: sequelize.Sequelize) {
-  const model: Ships = db.define('ships', Columns, Options)
+  const model = db.define('ships', Columns, Options) as Ships
   return model
 }

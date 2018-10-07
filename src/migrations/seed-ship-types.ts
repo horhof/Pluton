@@ -6,67 +6,67 @@ export const up = (sequelize: sequelize.Sequelize) => {
     {
       class: 'F',
       designation: 5,
-      name: 'Interceptor'
+      name: 'Interceptor',
     },
     {
       class: 'F',
       designation: 117,
-      name: 'Spider'
+      name: 'Spider',
     },
     {
       class: 'P',
       designation: 38,
-      name: 'Phoenix'
+      name: 'Phoenix',
     },
     {
       class: 'P',
       designation: 51,
-      name: 'Wraith'
+      name: 'Wraith',
     },
     {
       class: 'A',
       designation: 10,
-      name: 'Astropod'
+      name: 'Astropod',
     },
     {
       class: 'A',
       designation: 4,
-      name: 'War frigate'
+      name: 'War frigate',
     },
     {
       class: 'A',
       designation: 6,
-      name: 'Black widow'
+      name: 'Black widow',
     },
     {
       class: 'D',
       designation: 25,
-      name: 'Devastator'
+      name: 'Devastator',
     },
     {
       class: 'D',
       designation: 31,
-      name: 'Ghost'
+      name: 'Ghost',
     },
     {
       class: 'C',
       designation: 130,
-      name: 'Star cruiser'
+      name: 'Star cruiser',
     },
     {
       class: 'C',
       designation: 5,
-      name: 'Tarantula'
+      name: 'Tarantula',
     },
     {
       class: 'B',
       designation: 17,
-      name: 'Dreadnaught'
+      name: 'Dreadnaught',
     },
     {
       class: 'B',
       designation: 2,
-      name: 'Spectre'
+      name: 'Spectre',
     }
   ])
 };

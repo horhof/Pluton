@@ -4,10 +4,10 @@ const debug = getLog(`Http:User`)
 import * as the from 'lodash'
 import * as restify from 'restify'
 import { Request as Req, Response as Res } from 'restify'
-import { Ctrl } from './Ctrl'
+import { ResourceCtrl } from './Resource'
 import * as User from '../models/User'
 
-export class UsersCtrl extends Ctrl {
+export class UsersCtrl extends ResourceCtrl {
   protected model: User.Users
 
   constructor(server: restify.Server, model: User.Users) {

@@ -1,19 +1,18 @@
-import { getLog } from './Logger'
-const debug = getLog(`Game`)
-
+import * as the from 'lodash'
 import * as restify from 'restify'
-import { Request as Req, Response as Res } from 'restify'
 
-import { Database } from './models/Database'
-import { UsersCtrl } from './http/Users'
 import { FleetsCtrl } from './http/Fleets'
+import { GameCtrl } from './http/Game'
+import { UsersCtrl } from './http/Users'
+import { getLog } from './Logger'
+import { Database } from './models/Database'
+
+const debug = getLog(`Game`)
 
 export class Game {
   db: Database
-
   server: restify.Server
-
-  private controllers: { [name: string]: any } = {}
+  private ctrl: { [name: string]: any } = {}
 
   constructor() {
     debug(`New> Loading database...`)
@@ -24,10 +23,9 @@ export class Game {
     this.server.use(restify.plugins.bodyParser())
 
     debug(`New> Loading controllers...`)
-    this.controllers.users = new UsersCtrl(this.server, this.db.users)
-    this.controllers.fleets = new FleetsCtrl(this.server, this.db.fleets)
-
-    this.server.post(`/ticks`, this.postTicks.bind(this))
+    this.ctrl.game = new GameCtrl(this.server, this)
+    this.ctrl.users = new UsersCtrl(this.server, this.db.users)
+    this.ctrl.fleets = new FleetsCtrl(this.server, this.db.fleets)
   }
 
   async start() {
@@ -43,7 +41,16 @@ export class Game {
     })
   }
 
-  private postTicks(req: Req, res: Res) {
+  async tick() {
+    debug(`Tick>`)
+  }
 
+  private async advanceMovingFleets() {
+    return this.db.fleets.findAll({ where: { moving: true } })
+      .then(fleets => {
+        the(fleets).forEach(fleet => {
+
+        })
+      })
   }
 }

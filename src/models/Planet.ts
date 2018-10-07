@@ -1,8 +1,11 @@
 import * as sequelize from 'sequelize'
 
 export interface IPlanet {
-  name: string
-  userId: number
+  id?: number
+  name?: string
+  index?: number
+  galaxyId?: number
+  userId?: number
 }
 
 export interface Planet extends IPlanet {
@@ -12,7 +15,31 @@ export interface Planets extends sequelize.Model<Planet, IPlanet> {
 }
 
 export const Columns = {
-  name: sequelize.STRING,
+  id: {
+    type: sequelize.INTEGER,
+    primaryKey: true,
+    allowNull: false,
+  },
+  name: {
+    type: sequelize.STRING,
+    allowNull: false,
+  },
+  index: {
+    type: sequelize.INTEGER,
+    allowNull: false,
+  },
+  galaxyId: {
+    type: sequelize.INTEGER,
+    allowNull: false,
+    references: { model: 'galaxies', key: 'id' },
+    onDelete: 'SET NULL',
+  },
+  userId: {
+    type: sequelize.INTEGER,
+    allowNull: false,
+    references: { model: 'users', key: 'id' },
+    onDelete: 'SET NULL',
+  },
 }
 
 const Options = {

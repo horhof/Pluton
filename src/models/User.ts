@@ -1,20 +1,19 @@
+import * as sequelize from 'sequelize'
+
 import { getLog } from '../Logger'
-const debug = getLog(`Http:Ctrl:Fleet`)
-
-import * as Planet from './Planet'
 import * as Fleet from './Fleet'
+import * as Planet from './Planet'
 
-import sequelize = require('sequelize')
+const debug = getLog(`Http:Ctrl:Fleet`)
 
 export interface IUser {
   id?: number
-  name: string
-  email: string
-  password: string
+  name?: string
+  email?: string
+  password?: string
 }
 
 export interface User extends IUser {
-  id: number
 }
 
 export interface Users extends sequelize.Model<User, IUser> {
@@ -24,6 +23,11 @@ export interface Users extends sequelize.Model<User, IUser> {
 }
 
 export const Columns = {
+  id: {
+    type: sequelize.INTEGER,
+    primaryKey: true,
+    allowNull: false,
+  },
   name: {
     type: sequelize.STRING,
     allowBlank: false,
@@ -48,7 +52,7 @@ type UserDeps = [
 ]
 
 export function define(db: sequelize.Sequelize, deps: UserDeps) {
-  const model = <Users>db.define('users', Columns, Options)
+  const model = db.define('users', Columns, Options) as Users
   const [planets, fleets] = deps
   model.planets = planets
   model.fleets = fleets

@@ -1,20 +1,22 @@
-import { getLog } from '../Logger'
-const debug = getLog(`Database`)
-
-import sequelize = require('sequelize')
+import * as sequelize from 'sequelize'
 import * as Umzug from 'umzug'
 
-import * as User from './User'
-import * as Ship from './Ship'
+import { getLog } from '../Logger'
 import * as Fleet from './Fleet'
+import * as Galaxy from './Galaxy'
 import * as Planet from './Planet'
+import * as Ship from './Ship'
+import * as User from './User'
+
+const debug = getLog(`Database`)
 
 export class Database {
   static RESET = true
-  users: User.Users
-  ships: Ship.Ships
   fleets: Fleet.Fleets
+  galaxies: Galaxy.Galaxies
   planets: Planet.Planets
+  ships: Ship.Ships
+  users: User.Users
   private sequelize: sequelize.Sequelize
 
   constructor() {
@@ -29,16 +31,19 @@ export class Database {
         acquire: 30000,
         idle: 10000,
       },
-      logging: false,
+      logging: true,
     });
     debug(`New> Defining models...`)
+    this.ships = Ship.define(this.sequelize)
+    this.galaxies = Galaxy.define(this.sequelize)
     this.planets = Planet.define(this.sequelize)
+    debug(`New> Defining models with dependencies...`)
     this.fleets = Fleet.define(this.sequelize, [this.planets])
     this.users = User.define(this.sequelize, [this.planets, this.fleets])
-    this.ships = Ship.define(this.sequelize)
     debug(`New> Associating models...`)
-    this.fleets.belongsTo(this.planets) && this.planets.hasMany(this.fleets)
+    this.planets.belongsTo(this.galaxies) && this.galaxies.hasMany(this.planets)
     this.planets.belongsTo(this.users) && this.users.hasMany(this.planets)
+    this.fleets.belongsTo(this.planets) && this.planets.hasMany(this.fleets)
   }
 
   private async seed() {

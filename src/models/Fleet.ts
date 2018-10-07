@@ -1,9 +1,10 @@
-import { getLog } from '../Logger'
-const debug = getLog(`Models:Fleet`)
-
 import { assign } from 'lodash'
 import * as sequelize from 'sequelize'
+
+import { getLog } from '../Logger'
 import * as Planet from './Planet'
+
+const debug = getLog(`Models:Fleet`)
 
 export interface IFleet {
   id?: number
@@ -31,6 +32,11 @@ export interface Fleets extends sequelize.Model<Fleet, IFleet> {
 }
 
 export const Columns = {
+  id: {
+    type: sequelize.INTEGER,
+    primaryKey: true,
+    allowNull: false,
+  },
   name: {
     type: sequelize.STRING,
     allowNull: false,
@@ -54,10 +60,17 @@ export const Columns = {
     allowNull: false,
     defaultValue: 0,
   },
+  planetId: {
+    type: sequelize.INTEGER,
+    allowNull: false,
+    references: { model: 'planets', key: 'id' },
+    onDelete: 'CASCADE',
+  },
   targetPlanetId: {
     type: sequelize.INTEGER,
     allowNull: true,
     references: { model: 'planets', key: 'id' },
+    onDelete: 'SET NULL',
   },
 }
 
@@ -70,7 +83,7 @@ type FleetDeps = [
 ]
 
 export function define(db: sequelize.Sequelize, deps: FleetDeps) {
-  const model = <Fleets>db.define('fleets', Columns, Options)
+  const model = db.define('fleets', Columns, Options) as Fleets
   const [planets] = deps
   model.planets = planets
 
