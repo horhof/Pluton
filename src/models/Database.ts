@@ -36,7 +36,7 @@ export class Database {
         acquire: 30000,
         idle: 10000,
       },
-      logging: true,
+      logging: false,
     });
     debug(`New> Defining models...`)
     this.ships = Ship.define(this.sequelize)

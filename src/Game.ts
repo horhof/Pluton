@@ -52,7 +52,10 @@ export class Game {
     const data = {
       ticks_remaining: sequelize.literal(`ticks_remaining - 1`)
     } as IFleet
-    const where = { moving: true }
+    const where = {
+      moving: true,
+      ticks_remaining: { $gt: 0 },
+    }
     return this.db.fleets.update(data, { where })
   }
 }

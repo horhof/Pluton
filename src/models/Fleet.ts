@@ -23,10 +23,12 @@ export interface IFleet {
   target_planet_id?: number
 }
 
-export interface Fleet extends IFleet {
+export interface Fleet extends IFleet, sequelize.Instance<IFleet> {
+  warp(planetId: number): Promise<Fleet>
 }
 
 export interface Fleets extends sequelize.Model<Fleet, IFleet> {
+  prototype: Fleet
   planets: Planet.Planets
   /** Add to a planet's set of fleets. */
   add(data: IFleet): Promise<Fleet>
@@ -50,7 +52,7 @@ export const Columns = {
   mobile: {
     type: sequelize.BOOLEAN,
     allowNull: false,
-    defaultValue: false,
+    defaultValue: true,
   },
   moving: {
     type: sequelize.BOOLEAN,
@@ -95,6 +97,15 @@ export function define(db: sequelize.Sequelize, deps: Deps) {
     })
     assign(data, { index: count + 1 })
     return this.create(data)
+  }
+
+  model.prototype.warp = async function(planet_id: number) {
+    debug(`Warp> Planet=%o`, planet_id)
+    return this.update({
+      planet_id,
+      moving: true,
+      ticks_remaining: 6,
+    })
   }
 
   return model

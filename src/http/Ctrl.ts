@@ -16,9 +16,9 @@ export abstract class Ctrl {
   }
 
   /** Abort the request if an /:id parameter isn't valid, else return the ID. */
-  protected checkId(req: Req, res: Res): number | undefined {
-    const id = the(req).get('params.id') as number | undefined
-    if (!id) return res.json(Code.BAD_REQ, { message: `Not a valid ID: ${id}.` })
-    return id
+  protected checkId(req: Req, res: Res, key = 'id'): number | undefined {
+    const id = the(req).get(`params.${key}`) as number | undefined
+    if (!id) return res.json(Code.BAD_REQ, { message: `Not a valid ${key}: ${id}.` })
+    return Number(id)
   }
 }
