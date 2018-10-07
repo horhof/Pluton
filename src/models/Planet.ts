@@ -4,7 +4,7 @@ export interface IPlanet {
   id?: number
   name?: string
   index?: number
-  galaxyId?: number
+  starId?: number
   userId?: number
 }
 
@@ -18,6 +18,7 @@ export const Columns = {
   id: {
     type: sequelize.INTEGER,
     primaryKey: true,
+    autoIncrement: true,
     allowNull: false,
   },
   name: {
@@ -28,10 +29,10 @@ export const Columns = {
     type: sequelize.INTEGER,
     allowNull: false,
   },
-  galaxyId: {
+  starId: {
     type: sequelize.INTEGER,
     allowNull: false,
-    references: { model: 'galaxies', key: 'id' },
+    references: { model: 'stars', key: 'id' },
     onDelete: 'SET NULL',
   },
   userId: {

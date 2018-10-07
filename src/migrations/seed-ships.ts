@@ -1,8 +1,12 @@
 import * as sequelize from 'sequelize'
+import { getLog } from '../Logger'
 
-export const up = (sequelize: sequelize.Sequelize) => {
+const debug = getLog(`Database:Seed`)
+
+export const up = async (sequelize: sequelize.Sequelize) => {
+  debug(`Seeding ships...`)
   const query = sequelize.getQueryInterface()
-  query.bulkInsert('ships', [
+  await query.bulkInsert('ships', [
     {
       class: 'F',
       designation: 5,
@@ -67,6 +71,6 @@ export const up = (sequelize: sequelize.Sequelize) => {
       class: 'B',
       designation: 2,
       name: 'Spectre',
-    }
+    },
   ])
-};
+}

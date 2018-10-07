@@ -1,23 +1,25 @@
 import * as sequelize from 'sequelize'
 
-export interface IGalaxy {
+export interface IStar {
   id?: number
   /** Which position is this within the cluster? */
   index?: number
-  /** Which cluster is this galaxy a part of? */
+  /** Which cluster is this star a part of? */
   cluster?: number
+  name?: number
 }
 
-export interface Galaxy extends IGalaxy {
+export interface Star extends IStar {
 }
 
-export interface Galaxies extends sequelize.Model<Galaxy, IGalaxy> {
+export interface Stars extends sequelize.Model<Star, IStar> {
 }
 
 export const Columns = {
   id: {
     type: sequelize.INTEGER,
     primaryKey: true,
+    autoIncrement: true,
     allowNull: false,
   },
   index: {
@@ -28,6 +30,10 @@ export const Columns = {
     type: sequelize.INTEGER,
     allowNull: false,
   },
+  name: {
+    type: sequelize.STRING,
+    allowNull: false,
+  },
 }
 
 const Options = {
@@ -35,6 +41,6 @@ const Options = {
 }
 
 export function define(db: sequelize.Sequelize) {
-  const model = db.define('galaxies', Columns, Options) as Galaxies
+  const model = db.define('stars', Columns, Options) as Stars
   return model
 }

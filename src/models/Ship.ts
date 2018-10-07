@@ -24,13 +24,12 @@ export enum ShipClass {
 }
 
 export const Columns = {
-  /*
   id: {
     type: sequelize.INTEGER,
     primaryKey: true,
+    autoIncrement: true,
     allowNull: false,
   },
-  */
   class: {
     type: sequelize.ENUM(Object.keys(ShipClass)),
     allowNull: false,

@@ -35,6 +35,7 @@ export const Columns = {
   id: {
     type: sequelize.INTEGER,
     primaryKey: true,
+    autoIncrement: true,
     allowNull: false,
   },
   name: {

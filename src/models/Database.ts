@@ -3,7 +3,7 @@ import * as Umzug from 'umzug'
 
 import { getLog } from '../Logger'
 import * as Fleet from './Fleet'
-import * as Galaxy from './Galaxy'
+import * as Star from './Star'
 import * as Planet from './Planet'
 import * as Ship from './Ship'
 import * as User from './User'
@@ -13,7 +13,7 @@ const debug = getLog(`Database`)
 export class Database {
   static RESET = true
   fleets: Fleet.Fleets
-  galaxies: Galaxy.Galaxies
+  stars: Star.Stars
   planets: Planet.Planets
   ships: Ship.Ships
   users: User.Users
@@ -31,17 +31,17 @@ export class Database {
         acquire: 30000,
         idle: 10000,
       },
-      logging: true,
+      logging: false,
     });
     debug(`New> Defining models...`)
     this.ships = Ship.define(this.sequelize)
-    this.galaxies = Galaxy.define(this.sequelize)
+    this.stars = Star.define(this.sequelize)
     this.planets = Planet.define(this.sequelize)
     debug(`New> Defining models with dependencies...`)
     this.fleets = Fleet.define(this.sequelize, [this.planets])
     this.users = User.define(this.sequelize, [this.planets, this.fleets])
     debug(`New> Associating models...`)
-    this.planets.belongsTo(this.galaxies) && this.galaxies.hasMany(this.planets)
+    this.planets.belongsTo(this.stars) && this.stars.hasMany(this.planets)
     this.planets.belongsTo(this.users) && this.users.hasMany(this.planets)
     this.fleets.belongsTo(this.planets) && this.planets.hasMany(this.fleets)
   }
