@@ -63,7 +63,7 @@ export function define(db: sequelize.Sequelize, deps: Deps) {
   model.init = async function(data: { name: string, user_id: number }) {
     const { name, user_id } = data
     const stars = await this.stars.count()
-    const star_id = Math.round(Math.random() * stars + 1)
+    const star_id = Math.round(Math.random() * stars - 1) + 1
     const planets = await this.count({ where: { star_id } })
     debug(`Init> Stars=%o StarId=%o Planets=%o`, stars, star_id, planets)
     const insert = {

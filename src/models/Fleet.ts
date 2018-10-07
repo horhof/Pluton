@@ -86,6 +86,7 @@ export function define(db: sequelize.Sequelize, deps: Deps) {
   model.planets = planets
 
   model.add = async function(data: IFleet) {
+    debug(`Add> Data=%o`, data)
     const { planet_id } = data
     if (!planet_id) throw new Error(`Fleet must belong to a planet.`)
     const count = await this.count({
