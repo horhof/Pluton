@@ -6,7 +6,7 @@ import * as restify from 'restify'
 import { Request as Req, Response as Res } from 'restify'
 import * as sequelize from 'sequelize'
 
-enum Code {
+export enum Code {
   OK = 200,
   BAD_REQ = 400,
   NOT_FOUND = 404,

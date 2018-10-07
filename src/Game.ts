@@ -2,6 +2,7 @@ import { getLog } from './Logger'
 const debug = getLog(`Game`)
 
 import * as restify from 'restify'
+import { Request as Req, Response as Res } from 'restify'
 
 import { Database } from './models/Database'
 import { UsersCtrl } from './http/Users'
@@ -25,6 +26,8 @@ export class Game {
     debug(`New> Loading controllers...`)
     this.controllers.users = new UsersCtrl(this.server, this.db.users)
     this.controllers.fleets = new FleetsCtrl(this.server, this.db.fleets)
+
+    this.server.post(`/ticks`, this.postTicks.bind(this))
   }
 
   async start() {
@@ -38,5 +41,9 @@ export class Game {
         resolve()
       })
     })
+  }
+
+  private postTicks(req: Req, res: Res) {
+
   }
 }

@@ -1,8 +1,9 @@
 import { getLog } from '../Logger'
 const debug = getLog(`Models:Fleet`)
 
-import * as the from 'lodash'
+import { assign } from 'lodash'
 import * as sequelize from 'sequelize'
+import * as Planet from './Planet'
 
 export interface IFleet {
   id?: number
@@ -14,15 +15,18 @@ export interface IFleet {
   moving?: boolean
   /** The number of ticks until the fleet reaches its destination. */
   ticksRemaining?: number
+  /** The owning planet. */
+  planetId?: number
   /** The planet the fleet is at or is travelling to. */
   targetPlanetId?: number
-  userId?: number
 }
 
 export interface Fleet extends IFleet {
 }
 
 export interface Fleets extends sequelize.Model<Fleet, IFleet> {
+  planets: Planet.Planets
+  /** Add to a planet's set of fleets. */
   add(data: IFleet): Promise<Fleet>
 }
 
@@ -41,7 +45,7 @@ export const Columns = {
     defaultValue: false,
   },
   moving: {
-    type: sequelize.STRING,
+    type: sequelize.BOOLEAN,
     allowNull: false,
     defaultValue: false,
   },
@@ -61,13 +65,23 @@ const Options = {
   timestamps: false,
 }
 
-export function define(db: sequelize.Sequelize) {
+type FleetDeps = [
+  Planet.Planets
+]
+
+export function define(db: sequelize.Sequelize, deps: FleetDeps) {
   const model = <Fleets>db.define('fleets', Columns, Options)
+  const [planets] = deps
+  model.planets = planets
 
   model.add = async function(data: IFleet) {
-    debug(`Add>`)
-    const index = 1
-    the(data).assign({ index }).value()
+    const { planetId } = data
+    if (!planetId) throw new Error(`Fleet must belong to a planet.`)
+    const count = await this.count({
+      include: [model.planets],
+      where: { planetId },
+    })
+    assign(data, { index: count + 1 })
     return this.create(data)
   }
 
