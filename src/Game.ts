@@ -1,11 +1,12 @@
-import * as the from 'lodash'
 import * as restify from 'restify'
+import * as sequelize from 'sequelize'
 
 import { FleetsCtrl } from './http/Fleets'
 import { GameCtrl } from './http/Game'
 import { UsersCtrl } from './http/Users'
 import { getLog } from './Logger'
 import { Database } from './models/Database'
+import { IFleet } from './models/Fleet'
 
 const debug = getLog(`Game`)
 
@@ -43,14 +44,15 @@ export class Game {
 
   async tick() {
     debug(`Tick>`)
+    return this.advanceMovingFleets()
   }
 
   private async advanceMovingFleets() {
-    return this.db.fleets.findAll({ where: { moving: true } })
-      .then(fleets => {
-        the(fleets).forEach(fleet => {
-
-        })
-      })
+    // @ts-ignore: sequelize.literal is not a number
+    const data = {
+      ticksRemaining: sequelize.literal(`"ticksRemaining" - 1`)
+    } as IFleet
+    const where = { moving: true }
+    return this.db.fleets.update(data, { where })
   }
 }
