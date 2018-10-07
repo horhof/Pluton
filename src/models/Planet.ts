@@ -1,17 +1,25 @@
 import * as sequelize from 'sequelize'
 
+import { getLog } from '../Logger'
+import { ModelOptions } from './Database'
+import * as Star from './Star'
+
+const debug = getLog(`Planet`)
+
 export interface IPlanet {
   id?: number
   name?: string
   index?: number
-  starId?: number
-  userId?: number
+  star_id?: number
+  user_id?: number
 }
 
 export interface Planet extends IPlanet {
 }
 
 export interface Planets extends sequelize.Model<Planet, IPlanet> {
+  stars: Star.Stars
+  init(data: IPlanet): Promise<Planet>
 }
 
 export const Columns = {
@@ -29,13 +37,13 @@ export const Columns = {
     type: sequelize.INTEGER,
     allowNull: false,
   },
-  starId: {
+  star_id: {
     type: sequelize.INTEGER,
     allowNull: false,
     references: { model: 'stars', key: 'id' },
     onDelete: 'SET NULL',
   },
-  userId: {
+  user_id: {
     type: sequelize.INTEGER,
     allowNull: false,
     references: { model: 'users', key: 'id' },
@@ -43,11 +51,30 @@ export const Columns = {
   },
 }
 
-const Options = {
-  timestamps: false,
-}
+type Deps = [
+  Star.Stars
+]
 
-export function define(db: sequelize.Sequelize) {
-  const model = db.define('planets', Columns, Options) as Planets
+export function define(db: sequelize.Sequelize, deps: Deps) {
+  const model = db.define('planets', Columns, ModelOptions) as Planets
+  const [stars] = deps
+  model.stars = stars
+
+  model.init = async function(data: { name: string, user_id: number }) {
+    const { name, user_id } = data
+    const stars = await this.stars.count()
+    const star_id = Math.round(Math.random() * stars + 1)
+    const planets = await this.count({ where: { star_id } })
+    debug(`Init> Stars=%o StarId=%o Planets=%o`, stars, star_id, planets)
+    const insert = {
+      name: `${name}'s planet`,
+      user_id,
+      star_id,
+      index: planets + 1,
+    }
+    debug(`Init> Data=%o`, insert)
+    return this.create(insert)
+  }
+
   return model
 }

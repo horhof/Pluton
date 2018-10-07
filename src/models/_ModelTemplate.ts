@@ -1,4 +1,5 @@
 import * as sequelize from 'sequelize'
+import { ModelOptions } from './Database'
 
 export interface ICapSing {
 }
@@ -12,11 +13,10 @@ export interface CapPlural extends sequelize.Model<CapSing, ICapSing> {
 export const Columns = {
 }
 
-const Options = {
-  timestamps: false,
-}
+type Deps = [
+]
 
-export function define(db: sequelize.Sequelize) {
-  const model = db.define('lowPlural', Columns, Options) as CapPlural
+export function define(db: sequelize.Sequelize, deps?: Deps) {
+  const model = db.define('lowPlural', Columns, ModelOptions) as CapPlural
   return model
 }

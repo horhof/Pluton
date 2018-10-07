@@ -10,6 +10,11 @@ import * as User from './User'
 
 const debug = getLog(`Database`)
 
+export const ModelOptions = {
+  timestamps: false,
+  underscored: true,
+}
+
 export class Database {
   static RESET = true
   fleets: Fleet.Fleets
@@ -31,13 +36,12 @@ export class Database {
         acquire: 30000,
         idle: 10000,
       },
-      logging: false,
+      logging: true,
     });
     debug(`New> Defining models...`)
     this.ships = Ship.define(this.sequelize)
     this.stars = Star.define(this.sequelize)
-    this.planets = Planet.define(this.sequelize)
-    debug(`New> Defining models with dependencies...`)
+    this.planets = Planet.define(this.sequelize, [this.stars])
     this.fleets = Fleet.define(this.sequelize, [this.planets])
     this.users = User.define(this.sequelize, [this.planets, this.fleets])
     debug(`New> Associating models...`)

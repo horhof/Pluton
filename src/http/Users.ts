@@ -27,7 +27,7 @@ export class UsersCtrl extends ResourceCtrl {
     debug(`POST /${this.uri}>`)
     const data = the(req).get('body')
     if (!data) return res.json(400, { message: `No data to add.` })
-    this.model.initUser(data)
+    this.model.init(data)
       .then(record => res.json(200, record))
       .catch(this.abort(res))
   }

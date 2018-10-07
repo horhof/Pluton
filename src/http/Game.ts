@@ -1,5 +1,5 @@
 import { getLog } from '../Logger'
-const debug = getLog(`Http:User`)
+const debug = getLog(`Http:Game`)
 
 import * as restify from 'restify'
 import { Request as Req, Response as Res } from 'restify'

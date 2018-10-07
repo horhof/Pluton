@@ -1,10 +1,11 @@
 import * as sequelize from 'sequelize'
 
 import { getLog } from '../Logger'
+import { ModelOptions } from './Database'
 import * as Fleet from './Fleet'
 import * as Planet from './Planet'
 
-const debug = getLog(`Http:Ctrl:Fleet`)
+const debug = getLog(`User`)
 
 export interface IUser {
   id?: number
@@ -19,7 +20,7 @@ export interface User extends IUser {
 export interface Users extends sequelize.Model<User, IUser> {
   fleets: Fleet.Fleets
   planets: Planet.Planets
-  initUser(data: IUser): Promise<User>
+  init(data: IUser): Promise<User>
 }
 
 export const Columns = {
@@ -43,28 +44,24 @@ export const Columns = {
   },
 }
 
-const Options = {
-  timestamps: false,
-}
-
-type UserDeps = [
+type Deps = [
   Planet.Planets,
   Fleet.Fleets
 ]
 
-export function define(db: sequelize.Sequelize, deps: UserDeps) {
-  const model = db.define('users', Columns, Options) as Users
+export function define(db: sequelize.Sequelize, deps: Deps) {
+  const model = db.define('users', Columns, ModelOptions) as Users
   const [planets, fleets] = deps
   model.planets = planets
   model.fleets = fleets
 
-  model.initUser = async function(data: IUser) {
-    debug(`Init user>`)
+  model.init = async function(data: IUser) {
+    debug(`Init>`)
     const userName = data.name
     const user = await this.create(data)
-    await this.planets.create({
+    await this.planets.init({
       name: `${userName}'s planet`,
-      userId: user.id,
+      user_id: user.id,
     })
     return user
   }

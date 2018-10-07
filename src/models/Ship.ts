@@ -1,5 +1,7 @@
 import * as sequelize from 'sequelize'
 
+import { ModelOptions } from './Database'
+
 export interface IShip {
   id?: number
   class?: string
@@ -49,11 +51,7 @@ export const Columns = {
   },
 }
 
-const Options = {
-  timestamps: false,
-}
-
 export function define(db: sequelize.Sequelize) {
-  const model = db.define('ships', Columns, Options) as Ships
+  const model = db.define('ships', Columns, ModelOptions) as Ships
   return model
 }

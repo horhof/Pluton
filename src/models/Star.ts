@@ -1,5 +1,7 @@
 import * as sequelize from 'sequelize'
 
+import { ModelOptions } from './Database'
+
 export interface IStar {
   id?: number
   /** Which position is this within the cluster? */
@@ -36,11 +38,7 @@ export const Columns = {
   },
 }
 
-const Options = {
-  timestamps: false,
-}
-
 export function define(db: sequelize.Sequelize) {
-  const model = db.define('stars', Columns, Options) as Stars
+  const model = db.define('stars', Columns, ModelOptions) as Stars
   return model
 }

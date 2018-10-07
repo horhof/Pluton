@@ -2,9 +2,10 @@ import { assign } from 'lodash'
 import * as sequelize from 'sequelize'
 
 import { getLog } from '../Logger'
+import { ModelOptions } from './Database'
 import * as Planet from './Planet'
 
-const debug = getLog(`Models:Fleet`)
+const debug = getLog(`Fleet`)
 
 export interface IFleet {
   id?: number
@@ -15,11 +16,11 @@ export interface IFleet {
   /** Whether or not the fleet is en route to a target. */
   moving?: boolean
   /** The number of ticks until the fleet reaches its destination. */
-  ticksRemaining?: number
+  ticks_remaining?: number
   /** The owning planet. */
-  planetId?: number
+  planet_id?: number
   /** The planet the fleet is at or is travelling to. */
-  targetPlanetId?: number
+  target_planet_id?: number
 }
 
 export interface Fleet extends IFleet {
@@ -56,18 +57,18 @@ export const Columns = {
     allowNull: false,
     defaultValue: false,
   },
-  ticksRemaining: {
+  ticks_remaining: {
     type: sequelize.INTEGER,
     allowNull: false,
     defaultValue: 0,
   },
-  planetId: {
+  planet_id: {
     type: sequelize.INTEGER,
     allowNull: false,
     references: { model: 'planets', key: 'id' },
     onDelete: 'CASCADE',
   },
-  targetPlanetId: {
+  target_planet_id: {
     type: sequelize.INTEGER,
     allowNull: true,
     references: { model: 'planets', key: 'id' },
@@ -75,25 +76,21 @@ export const Columns = {
   },
 }
 
-const Options = {
-  timestamps: false,
-}
-
-type FleetDeps = [
+type Deps = [
   Planet.Planets
 ]
 
-export function define(db: sequelize.Sequelize, deps: FleetDeps) {
-  const model = db.define('fleets', Columns, Options) as Fleets
+export function define(db: sequelize.Sequelize, deps: Deps) {
+  const model = db.define('fleets', Columns, ModelOptions) as Fleets
   const [planets] = deps
   model.planets = planets
 
   model.add = async function(data: IFleet) {
-    const { planetId } = data
-    if (!planetId) throw new Error(`Fleet must belong to a planet.`)
+    const { planet_id } = data
+    if (!planet_id) throw new Error(`Fleet must belong to a planet.`)
     const count = await this.count({
       include: [model.planets],
-      where: { planetId },
+      where: { planet_id },
     })
     assign(data, { index: count + 1 })
     return this.create(data)

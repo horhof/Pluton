@@ -50,7 +50,7 @@ export class Game {
   private async advanceMovingFleets() {
     // @ts-ignore: sequelize.literal is not a number
     const data = {
-      ticksRemaining: sequelize.literal(`"ticksRemaining" - 1`)
+      ticks_remaining: sequelize.literal(`ticks_remaining - 1`)
     } as IFleet
     const where = { moving: true }
     return this.db.fleets.update(data, { where })

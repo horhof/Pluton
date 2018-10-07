@@ -1,5 +1,5 @@
 import { getLog } from '../Logger'
-const debug = getLog(`Http:User`)
+const debug = getLog(`Http:Fleet`)
 
 import * as the from 'lodash'
 import * as restify from 'restify'
