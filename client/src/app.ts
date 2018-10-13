@@ -2,9 +2,15 @@ Ext.application({
   name: 'Pluton',
   extend: 'Pluton.Application',
   requires: [
+    'Pluton.view.Login',
+  ],
+  mainView: 'Pluton.view.Login'
+  /*
+  requires: [
     'Pluton.view.Main',
   ],
   mainView: 'Pluton.view.Main'
+  */
 });
 
 Ext.Loader.setPath({
