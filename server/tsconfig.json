@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "build",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "pretty": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "target": "es2016",
+  },
+  "include": [
+    "src/*.ts",
+    "src/migrations/*.ts"
+  ],
+  "exclude": [
+    "tmp"
+  ]
+}

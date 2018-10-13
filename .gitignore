@@ -1,9 +1,8 @@
-/.nyc_output
-/coverage
 /.vscode
+/.nyc_output
+/server/coverage
 /package-lock.json
 /node_modules
-/build
+/server/build
+/client/project
 /doc
-/tmp
-/data/*.json
