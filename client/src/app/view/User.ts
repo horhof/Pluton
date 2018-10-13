@@ -1,5 +1,5 @@
 interface UserVc extends Ext.app.IViewController {
-  onClickUser: (a: Ext.selection.IRowModel, b: Ext.data.IModel) => void
+  //onClickUser: (a: Ext.selection.IRowModel, b: Ext.data.IModel) => void
   onClickCreate: (a: Ext.button.IButton) => void
   onClickRefresh: (a: Ext.button.IButton) => void
 }
@@ -10,12 +10,14 @@ interface UserVc extends Ext.app.IViewController {
   requires: [
     `Pluton.store.Player`,
   ],
+  /*
   onClickUser: function(_, record) {
     const player = Ext.getStore(`player`)
     player.loadData!([record])
     // @ts-ignore
     //Pluton.Api.setKey(record.get('name'))
   },
+  */
   onClickCreate: function(sender) {
     const panel = sender.up!(`gridpanel`) as Ext.grid.IGridPanel
     if (!panel) return
@@ -33,7 +35,7 @@ interface UserVc extends Ext.app.IViewController {
 
 interface UserVm extends Ext.app.IViewModel {
   data: {
-    player: PlayerStore,
+    //player: PlayerStore,
     store: UserStore,
   }
 }
@@ -41,7 +43,7 @@ interface UserVm extends Ext.app.IViewModel {
 (Ext.define as (a: string, b: UserVm) => void)(`Pluton.view.UserVm`, {
   alias: [`viewmodel.user`],
   data: {
-    player: Ext.create(`Pluton.store.Player`),
+    //player: Ext.create(`Pluton.store.Player`),
     store: Ext.create(`Pluton.store.User`),
   },
   extend: `Ext.app.ViewModel`,
