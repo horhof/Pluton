@@ -1,7 +1,7 @@
 /**
  * This view is an example list of people.
  */
-Ext.define('Pluton.view.main.List', {
+Ext.define('Pluton.view.List', {
   extend: 'Ext.grid.Grid',
   xtype: 'mainlist',
 

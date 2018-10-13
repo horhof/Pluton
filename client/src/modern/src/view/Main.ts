@@ -10,9 +10,9 @@ Ext.define('Pluton.view.main.Main', {
   xtype: 'app-main',
   requires: [
     'Ext.MessageBox',
-    'Pluton.view.main.MainCtrl',
-    'Pluton.view.main.MainModel',
-    'Pluton.view.main.List',
+    'Pluton.view.MainVc',
+    'Pluton.view.MainVm',
+    'Pluton.view.List',
   ],
   controller: 'main',
   viewModel: 'main',
