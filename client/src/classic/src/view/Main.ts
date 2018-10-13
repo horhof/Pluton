@@ -88,5 +88,5 @@ Ext.define(`Pluton.view.Main`, {
   titleRotation: 0,
   ui: `navigation`,
   viewModel: `main`,
-  xtype: `app-main`,
+  //xtype: `app-main`,
 })
