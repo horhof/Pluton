@@ -9,6 +9,7 @@ interface User extends Ext.data.Model {
     { name: `name`, type: `string` },
     { name: `email`, type: `string` },
     { name: `password`, type: `string` },
+    { name: `key`, type: `string` },
   ],
   proxy: {
     headers: {

@@ -14,7 +14,6 @@ export class UsersCtrl extends ResourceCtrl {
 
   constructor(server: restify.Server, model: User.Users) {
     super(server, model, 'users')
-    this.server.post(`/users/key`, this.postKey.bind(this))
   }
 
   protected async get(_: Req, res: Res) {
@@ -36,24 +35,28 @@ export class UsersCtrl extends ResourceCtrl {
 
   protected async post(req: Req, res: Res) {
     debug(`POST /${this.uri}>`)
-    const data = the(req).get('body')
-    delete data.id
-    if (!data) return res.json(400, { message: `No parameters were provided.` })
-    this.model.init(data)
-      .then(record => res.json(200, record))
-      .catch(this.abort(res))
-  }
-
-  protected async postKey(req: Req, res: Res) {
-    debug(`POST /${this.uri}/key>`)
-    const data = the(req).get('body')
-    delete data.id
-    if (!data) return res.json(400, { message: `No parameters were provided.` })
-    this.model.authenticate(data)
-      .then(key => {
-        if (!key) return this.abort(res, 400)(new Error(`Authentication failed.`))
-        res.json(200, key)
-      })
-      .catch(this.abort(res))
+    const key = req.header('X-API-Key')
+    debug(`POST /${this.uri}> Key=%s ?=%o`, key, !key)
+    if (!key) {
+      debug(`POST /${this.uri}> No key. Authenticating...`)
+      const data = the(req).get('body')
+      delete data.id
+      if (!data) return res.json(400, { message: `No parameters were provided.` })
+      this.model.authenticate(data)
+        .then(key => {
+          if (!key) return this.abort(res, 400)(new Error(`Authentication failed.`))
+          res.json(200, key)
+        })
+        .catch(this.abort(res))
+    }
+    else {
+      debug(`POST /${this.uri}> API key present. Creating new user...`)
+      const data = the(req).get('body')
+      delete data.id
+      if (!data) return res.json(400, { message: `No parameters were provided.` })
+      this.model.init(data)
+        .then(record => res.json(200, record))
+        .catch(this.abort(res))
+    }
   }
 }

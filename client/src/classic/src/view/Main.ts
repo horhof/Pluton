@@ -1,4 +1,5 @@
 Ext.define(`Pluton.view.Main`, {
+  alias: [`widget.mainpanel`],
   controller: `main`,
   defaults: {
     bodyPadding: 20,

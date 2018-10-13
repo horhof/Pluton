@@ -1,7 +1,7 @@
 Ext.define('Pluton.Api', {
   singleton: true,
   config: {
-    key: '1',
+    key: ``,
   },
   constructor: function(config: any) {
     this.initConfig(config);

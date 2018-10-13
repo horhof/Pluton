@@ -9,13 +9,30 @@ interface LoginVc extends Ext.app.IViewController {
     `Pluton.store.Player`,
   ],
   onClickLogin: function(sender) {
-    console.log(`On click login> Sender=%o This=%o`, sender, this)
-    const panel = sender.up!(`gridpanel`) as Ext.grid.IGridPanel
+    console.log(`On click login> Sender=%o`, sender)
+    const panel = sender.up!(`panel`) as Ext.grid.IGridPanel
     if (!panel) return
-    const store = panel.getStore!()
+    console.log(`On click login> Panel=%o`, panel)
+    // @ts-ignore
+    const data = panel.getForm().getValues()
+    console.log(`On click login> Data=%o`, data)
+    const store = Ext.getStore(`player`)
     if (!store) return
-    store.add!({ id: null, name: `New user`, email: `test@test.com`, password: `password` })
-    store.sync!()
+    store.loadData!([], false);
+    store.add!(data)
+    store.sync!({
+      callback: function() {
+        const record = store.getAt!(0)
+        console.log(`On click login> Setting API key... Record=%o`, record)
+        // @ts-ignore
+        Pluton.Api.setKey(record.data.key)
+        console.log(`On click login> Adding a panel...`)
+        // @ts-ignore
+        panel.remove(0, true)
+        // @ts-ignore
+        panel.add({ xtype: `mainpanel` })
+      },
+    })
   },
 })
 
