@@ -17,11 +17,10 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "target": "es2016",
+    "target": "es2016"
   },
   "include": [
-    "src/*.ts",
-    "src/migrations/*.ts"
+    "src/*.ts"
   ],
   "exclude": [
     "tmp"
