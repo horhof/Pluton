@@ -3,6 +3,7 @@
 import { get } from 'lodash'
 import { stampLog } from './Log'
 import { createServer } from './Server'
+import { Ticker } from './Ticker'
 
 const log = stampLog(`Main`)
 const $ = log()
@@ -14,6 +15,10 @@ const main = async () => {
 
   await server.listen(port)
   $(`HTTP server listening at http://localhost:${port}${prefix ? `/${prefix}` : ''}`)
+
+  const ticker = new Ticker
+  $(`Starting ticker...`)
+  ticker.start()
 }
 
 process.on('unhandledRejection', err => {
