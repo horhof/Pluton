@@ -1,8 +1,10 @@
-/.vscode
-/.nyc_output
-/server/coverage
-/package-lock.json
-/node_modules
-/server/build
-/client/project
 /doc
+/.vscode
+/.cache
+/.nyc_output
+/node_modules
+/build
+/package-lock.json
+/postgrest.cfg
+/src/static
+/src/**/*.marko.js

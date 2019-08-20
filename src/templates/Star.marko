@@ -1,0 +1,24 @@
+<site-layout>
+  <@title>${input.name}</@title>
+  <@content>
+    <h1>${input.name}</h1>
+    <table>
+      <tbody>
+        <tr>
+          <th>Coords</th>
+          <td.id>
+            <a href=`../clusters/${input.cluster}.html`>${input.cluster}</a>:${input.index}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Planets</h2>
+    <ul>
+      <for|planet| of=input.planets>
+        <li>
+          <a href=`../planets/${planet.id}.html`>${planet.name}</a>
+        </li>
+      </for>
+    </ul>
+  </@content>
+</site-layout>

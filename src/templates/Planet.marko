@@ -1,0 +1,41 @@
+<site-layout>
+  <@title>${input.name}</@title>
+  <@content>
+    <h1>${input.name}</h1>
+    <table>
+      <tbody>
+        <tr>
+          <th>Coords</th>
+          <td.id>
+            <a href=`../clusters/${input.star.cluster}.html`>${input.star.cluster}</a>:<a href=`../stars/${input.star.id}.html`>${input.star.index}</a>:${input.index}
+          </td>
+        </tr>
+        <tr>
+          <th>Parent</th>
+          <td>
+            <a href=`../stars/${input.star.id}.html`>${input.star.name}</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Fleets</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        <for|key, row| in=input.fleets>
+          <tr>
+            <td>
+              <a href=`../fleets/${row.id}.html`>${row.name}</a>
+            </td>
+            <td>${row.size}</td>
+          </tr>
+        </for>
+      </tbody>
+    </table>
+  </@content>
+</site-layout>
