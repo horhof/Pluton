@@ -31,8 +31,8 @@ export const readPlanet =
 
     const input = data[0]
     $(`Input=%O`, input)
-    ctx.type = 'html'
     const template = require('../templates/Planet.marko')
+    ctx.type = 'html'
     ctx.body = template.stream(input)
   }
 
@@ -41,8 +41,8 @@ export const createPlanetForm =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`createPlanetForm`)
 
-    ctx.type = 'html'
     const template = require('../templates/CreatePlanet.marko')
+    ctx.type = 'html'
     ctx.body = template.stream()
   }
 

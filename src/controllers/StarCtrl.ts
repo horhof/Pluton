@@ -30,8 +30,8 @@ export const readStar =
     const body = await res.json() as Star[]
 
     const input = body[0]
-    ctx.type = 'html'
     const template = require('../templates/Star.marko')
+    ctx.type = 'html'
     ctx.body = template.stream(input)
   }
 
@@ -55,7 +55,7 @@ export const readCluster =
     const body = await res.json() as Star[]
 
     const input = { index, stars: body }
-    ctx.type = 'html'
     const template = require('../templates/Cluster.marko')
+    ctx.type = 'html'
     ctx.body = template.stream(input)
   }

@@ -54,8 +54,8 @@ export const createServer =
 export const showErr =
   (ctx: Ctx, msg: string, logger: Logger, code = 500): void => {
     logger(msg)
+    const template = require('./templates/Error.marko')
     ctx.status = code
     ctx.type = 'html'
-    const template = require('./templates/Error.marko')
     ctx.body = template.stream({ code, msg })
   }

@@ -2,7 +2,7 @@
   "verbose": true,
   "ignore": [
     "src/templates/*.marko.js",
-    "src/static/*"
+    "src/static"
   ],
   "execMap": {
     "ts": "ts-node"
