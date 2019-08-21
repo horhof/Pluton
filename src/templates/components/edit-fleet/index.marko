@@ -1,12 +1,12 @@
 class {
-  onCreate() {
+  onCreate(input) {
     this.state = {
-      name: "",
-      index: 0,
-      moving: false,
-      mobile: false,
-      planet_id: 0,
-      size: 0
+      name: input.name || "",
+      index: input.index || 0,
+      moving: input.moving || false,
+      mobile: input.mobile || false,
+      planet_id: input.planet_id || 0,
+      size: input.size || 0
     };
   }
 
@@ -53,7 +53,7 @@ class {
   </p>
   <p>
     <label>Planet ID</label>
-    <input.edit title="Star ID" type="number" value=state.star_id name="star_id" on-change("onEditInput")/>
+    <input.edit title="Star ID" type="number" value=state.planet_id name="planet_id" on-change("onEditInput")/>
   </p>
 </div>
 <button on-click("onClick")>Create</button>
