@@ -2,6 +2,7 @@
   "name": "pluton",
   "version": "0.3.0",
   "dependencies": {
+    "@lasso/marko-taglib": "^1.0.15",
     "debug": "^3.2.6",
     "koa": "^2.7.0",
     "koa-body": "^4.1.1",
@@ -16,7 +17,6 @@
     "nodemon": "^1.19.1",
     "ramda": "^0.26.1",
     "ts-node": "^3.3.0",
-    "@lasso/marko-taglib": "^1.0.15",
     "typescript": "3.5.3"
   },
   "devDependencies": {
@@ -28,13 +28,13 @@
     "@types/koa-static": "^4.0.1",
     "@types/lodash": "^4.14.123",
     "@types/node-fetch": "^2.5.0",
-    "@types/pg": "^7.4.14",
     "@types/ramda": "^0.26.8",
     "@types/react": "^16.9.1"
   },
   "scripts": {
     "compile": "tsc",
     "start": "ts-node src/Main",
-    "watch": "mocha src --watch --watch-extensions ts"
+    "watch": "nodemon -e ts,marko,css --watch src -- src/Main",
+    "watchtest": "mocha src --watch --watch-extensions ts"
   }
 }
