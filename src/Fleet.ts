@@ -7,5 +7,6 @@ export interface Fleet {
   index: N
   mobile: boolean
   size: Int
+  attacking: boolean
   planet: Planet
 }

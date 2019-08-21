@@ -1,9 +1,10 @@
 class {
-  onCreate() {
+  onCreate(input) {
+    console.log(input);
     this.state = {
       name: "",
-      index: 0,
-      star_id: 0
+      star_id: input.star_id || 0,
+      index: 0
     };
   }
 

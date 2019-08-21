@@ -1,13 +1,13 @@
 <site-layout>
-  <@title>${input.subject}</@title>
+  <@title>Cluster ${input.index}</@title>
   <@content>
     <h1>Cluster ${input.index}</h1>
-    <ul>
+    <ol>
       <for|star| of=input.stars>
         <li>
           <a href=`../stars/${star.id}.html`>${star.name}</a>
         </li>
       </for>
-    </ul>
+    </ol>
   </@content>
 </site-layout>

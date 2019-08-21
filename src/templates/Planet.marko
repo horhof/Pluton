@@ -1,5 +1,5 @@
 <site-layout>
-  <@title>${input.name}</@title>
+  <@title>Planet ${input.name}</@title>
   <@content>
     <h1>${input.name}</h1>
     <table>
@@ -22,17 +22,23 @@
     <table>
       <thead>
         <tr>
+          <th.center>PD</th>
+          <th.center>No.</th>
           <th>Name</th>
-          <th>Size</th>
+          <th.right>Size</th>
+          <th.center>Mode</th>
         </tr>
       </thead>
       <tbody>
         <for|key, row| in=input.fleets>
           <tr>
+            <td.center>${row.mobile ? "N" : "Y"}</td>
+            <td.center>${row.index}</td>
             <td>
               <a href=`../fleets/${row.id}.html`>${row.name}</a>
             </td>
-            <td>${row.size}</td>
+            <td.right>${row.size}</td>
+            <td.center>${row.attacking ? "Attack" : "Defend"}</td>
           </tr>
         </for>
       </tbody>

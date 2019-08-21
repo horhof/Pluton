@@ -229,3 +229,13 @@ button {
   border: 1px solid #333;
   font-size: 100%;
 }
+
+/* Classes */
+
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}

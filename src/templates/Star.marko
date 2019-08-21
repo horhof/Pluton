@@ -1,5 +1,5 @@
 <site-layout>
-  <@title>${input.name}</@title>
+  <@title>Star ${input.name}</@title>
   <@content>
     <h1>${input.name}</h1>
     <table>
@@ -13,12 +13,15 @@
       </tbody>
     </table>
     <h2>Planets</h2>
-    <ul>
+    <p>
+      <a href=`../planets/new.html?star_id=${input.id}`>Create</a>
+    </p>
+    <ol>
       <for|planet| of=input.planets>
         <li>
           <a href=`../planets/${planet.id}.html`>${planet.name}</a>
         </li>
       </for>
-    </ul>
+    </ol>
   </@content>
 </site-layout>

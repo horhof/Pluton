@@ -17,7 +17,7 @@ export const readPlanet =
       return showErr(ctx, `"${id}" is not a valid planet ID.`, $, 400)
     }
 
-    const res = await query({ noun: `planets?id=eq.${id}&select=*,star:stars(*),fleets(*)` })
+    const res = await query({ noun: `planets?id=eq.${id}&select=*,star:stars(*),fleets(*)&fleets.order=index.asc` })
 
     if (!res.ok) {
       return showErr(ctx, `Can't find planet "${id}" not valid.`, $, 404)
@@ -41,9 +41,13 @@ export const createPlanetForm =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`createPlanetForm`)
 
+    const query = ctx.request.query || {}
+    $(`Qs=%o`, query)
+    const { star_id } = query
+
     const template = require('../templates/CreatePlanet.marko')
     ctx.type = 'html'
-    ctx.body = template.stream()
+    ctx.body = template.stream({ star_id })
   }
 
 /** POST /planets/new.json */
