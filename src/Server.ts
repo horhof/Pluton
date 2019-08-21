@@ -4,9 +4,10 @@
 // - Create server
 
 import Koa from 'koa'
-import Router from 'koa-router'
 import mount from 'koa-mount'
+import Router from 'koa-router'
 import serve from 'koa-static'
+import { get } from 'lodash'
 import { Logger, stampLog } from './Log'
 import bind from './Routes'
 require('marko/node-require')
@@ -42,13 +43,15 @@ export const createServer =
     app.use(router.routes())
 
     app.use(async ctx => {
+      if (get(ctx.req, 'url', '').match(/favicon\.ico$/)) return
+
       $(`No route was matched for this request. Ctx=%O`, ctx)
     })
 
     return app
   }
 
-export const endReq =
+export const showErr =
   (ctx: Ctx, msg: string, logger: Logger, code = 500): void => {
     logger(msg)
     ctx.status = code

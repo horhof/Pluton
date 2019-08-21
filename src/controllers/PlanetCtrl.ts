@@ -1,14 +1,40 @@
 import { chain, get } from 'lodash'
-import { stampLog } from '../Log'
-import { Ctx, endReq } from '../Server'
 import { query } from '../Database'
+import { stampLog } from '../Log'
 import { Planet } from '../Planet'
+import { Ctx, showErr } from '../Server'
 
 const log = stampLog(`Http:Planet`)
 
-enum PlanetCtrlErr {
-  GENERAL,
-}
+/** GET /planets/1.html */
+export const readPlanet =
+  async (ctx: Ctx): Promise<void> => {
+    const $ = log(`readPlanet`)
+
+    const id = chain(ctx.params).get('id').toNumber().value()
+
+    if (!isFinite(id)) {
+      return showErr(ctx, `"${id}" is not a valid planet ID.`, $, 400)
+    }
+
+    const res = await query({ noun: `planets?id=eq.${id}&select=*,star:stars(*),fleets(*)` })
+
+    if (!res.ok) {
+      return showErr(ctx, `Can't find planet "${id}" not valid.`, $, 404)
+    }
+
+    const data = await res.json() as Planet[]
+
+    if (data.length < 1) {
+      return showErr(ctx, `Can't find planet "${id}".`, $, 404)
+    }
+
+    const input = data[0]
+    $(`Input=%O`, input)
+    ctx.type = 'html'
+    const template = require('../templates/Planet.marko')
+    ctx.body = template.stream(input)
+  }
 
 /** GET /planets/new.html */
 export const createPlanetForm =
@@ -29,64 +55,35 @@ export const createPlanet =
     const name = get(args, 'name')
     const star_id = get(args, 'star_id')
     const index = get(args, 'index')
-    const body = { name, star_id, index }
+    const planet = { name, star_id, index }
 
-    const res = await query(`planets`, body, `post`)
+    $(`Creating planet... Planet=%o`, planet)
+    const planetRes = await query({ verb: 'post', noun: 'planets', body: planet })
 
-    if (!res.ok) {
-      return endReq(ctx, `Failed to create planet "${JSON.stringify(body)}".`, $, res.status)
+    if (!planetRes.ok) {
+      return showErr(ctx, `Failed to create planet "${JSON.stringify(planet)}".`, $, planetRes.status)
     }
 
-    const h = res.headers.get('location') || ''
+    const h = planetRes.headers.get('location') || ''
     const m = h.match(/(\d+)/)
     const id = m && m[1]
 
+    $(`Planet created. Creating home fleet... PlanetId=%o`, id)
+    const fleetRes = await query({
+      verb: 'post',
+      noun: 'fleets',
+      body: {
+        name: `${name} Planetary Defense`,
+        index: 1,
+        planet_id: id,
+        mobile: false,
+      },
+    })
+
+    if (!fleetRes.ok) {
+      return showErr(ctx, `Failed to create home fleet planet ${id}.`, $, fleetRes.status)
+    }
+
+    $(`Home fleet created. Done.`)
     ctx.body = { url: `/planets/${id}.html` }
-    //ctx.body = `<a href="/planets/${id}">${name}</a>`
-  }
-
-/** GET /planets.html */
-export const readPlanets =
-  async (ctx: Ctx): Promise<void> => {
-    const $ = log(`getPlanets`)
-  }
-
-/** GET /planet.html */
-export const readMyPlanet =
-  async (ctx: Ctx): Promise<void> => {
-    const $ = log(`readMyPlanet`)
-
-    ctx.params.id = 1
-    await readPlanet(ctx)
-  }
-
-/** GET /planets/1.html */
-export const readPlanet =
-  async (ctx: Ctx): Promise<void> => {
-    const $ = log(`readPlanet`)
-
-    const id = chain(ctx.params).get('id').toNumber().value()
-
-    if (!isFinite(id)) {
-      return endReq(ctx, `"${id}" is not a valid planet ID.`, $, 400)
-    }
-
-    const res = await query(`planets?id=eq.${id}&select=*,star:stars(*),fleets(*)`)
-
-    if (!res.ok) {
-      return endReq(ctx, `Can't find planet "${id}" not valid.`, $, 404)
-    }
-
-    $(`Res=%O`, res)
-    const data = await res.json() as Planet[]
-
-    if (data.length < 1) {
-      return endReq(ctx, `Can't find planet "${id}".`, $, 404)
-    }
-
-    const input = data[0]
-    $(`Input=%O`, input)
-    ctx.type = 'html'
-    const template = require('../templates/Planet.marko')
-    ctx.body = template.stream(input)
   }
