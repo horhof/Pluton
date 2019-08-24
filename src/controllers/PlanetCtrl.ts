@@ -1,7 +1,7 @@
 import { assign, get } from 'lodash'
-import { getCreatedId, getNextIndex, query } from '../Database'
+import { getCreatedId, getInstance, getNextIndex, query } from '../Database'
 import { stampLog } from '../Log'
-import { getPlanet } from '../models/Planet'
+import { Planet } from '../models/Planet'
 import { Star } from '../models/Star'
 import { Ctx, sendErr, showErr } from '../Server'
 import { isLeft } from '../types/Either'
@@ -19,7 +19,7 @@ export const readPlanet =
       return showErr(ctx, `"${id}" is not a valid ID.`, $, 400)
     }
     $(`Done. Fetching planet %o...`, id)
-    const res = await getPlanet(id)
+    const res = await getInstance<Planet>({ noun: `planets?id=eq.${id}&select=*,star:stars(*),fleets(*)&fleets.order=index.asc` })
     if (isLeft(res)) {
       return showErr(ctx, res.message, $, 404)
     }

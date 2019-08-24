@@ -1,6 +1,8 @@
 import { assign, defaults, get } from 'lodash'
 import Fetch from 'node-fetch'
 import { stampLog } from './Log'
+import { AsyncEither, left } from './types/Either'
+import { ID } from './types/Number'
 
 const log = stampLog(`Database`)
 
@@ -14,6 +16,11 @@ interface QueryArgs {
   returnRepresentation?: boolean
   mergeDuplicates?: boolean
   headers?: { [key: string]: string }
+}
+
+enum QueryErr {
+  QUERY,
+  EMPTY_SET,
 }
 
 export const query =
@@ -48,6 +55,21 @@ export const query =
       headers,
     })
     return res
+  }
+
+/** Query using the given postgrest query arguments and get the first record. */
+export const getInstance =
+  async <T>(queryArgs: QueryArgs): AsyncEither<QueryErr, T> => {
+    const res = await query(queryArgs)
+    if (!res.ok) {
+      return left(QueryErr.QUERY, `Failed to query for "${JSON.stringify(queryArgs)}".`)
+    }
+    const body = await res.json() as T[]
+    const [head] = body
+    if (!head) {
+      return left(QueryErr.EMPTY_SET, `Returned empty set.`)
+    }
+    return head
   }
 
 /**
