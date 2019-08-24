@@ -19,7 +19,6 @@ interface QueryArgs {
 export const query =
   async (args: QueryArgs) => {
     const $ = log(`query`)
-
     defaults(args, {
       verb: 'get',
       contentType: 'application/json',
@@ -27,37 +26,27 @@ export const query =
       mergeDuplicates: false,
       headers: {},
     })
-
     const { verb, noun, body, contentType, returnRepresentation, mergeDuplicates, headers } = args
     const bodyStr = body ? JSON.stringify(body) : undefined
-
-    $(`Assigning content type...`)
     defaults(headers, { 'Content-Type': contentType })
-    $(`Done. Headers=%o`, headers)
-
     if (returnRepresentation) {
       $(`Return representation requested.`)
       const header = get(headers, 'Prefer', []) as string[]
       header.push('return=representation')
       assign(headers, { Prefer: header })
-      $(`Headers=%o`, headers)
     }
-
     if (mergeDuplicates) {
-      $(`Merge duplicates requested.`)
       const header = get(headers, 'Prefer', []) as string[]
       header.push('resolution=merge-duplicates')
       assign(headers, { Prefer: header })
       $(`Headers=%o`, headers)
     }
-
     $(`Headers=%o`, headers)
     const res = await Fetch(`http://localhost:4000/${noun}`, {
       method: verb,
       body: bodyStr,
       headers,
     })
-
     return res
   }
 
@@ -73,19 +62,15 @@ export const getNextIndex =
       verb: 'get',
       noun: `${child}?${parent}_id=eq.${parentId}&order=index.desc&limit=1`
     })
-
     if (!res.ok) {
       return 1
     }
-
     // If there are no children, this will be the first one.
     const parents = await res.json() as { index: number }[]
     if (parents.length < 1) {
       return 1
     }
-
     const [head] = parents
-
     return head.index + 1
   }
 

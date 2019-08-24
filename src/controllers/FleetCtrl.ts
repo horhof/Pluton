@@ -1,9 +1,10 @@
 import { assign, chain, get } from 'lodash'
-import { query, getCreatedId, getNextIndex } from '../Database'
+import { getCreatedId, getNextIndex, query } from '../Database'
 import { stampLog } from '../Log'
 import { Fleet } from '../models/Fleet'
 import { Planet } from '../models/Planet'
-import { Ctx, showErr, sendErr } from '../Server'
+import { Ctx, sendErr, showErr } from '../Server'
+import { getProperty } from './validation'
 
 const log = stampLog(`Http:Fleet`)
 
@@ -11,27 +12,22 @@ const log = stampLog(`Http:Fleet`)
 export const readFleet =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`readFleet`)
-
-    const id = chain(ctx.params).get('id').toNumber().value()
-
-    if (!isFinite(id)) {
-      return showErr(ctx, `"${id}" is not a valid fleet ID.`, $, 400)
+    $(`Parsing parameters...`)
+    const id = getProperty<number>(ctx.params, 'id', Number, isFinite)
+    if (!id) {
+      return showErr(ctx, `"${id}" is not a valid ID.`, $, 400)
     }
-
+    $(`Done. Fetching fleet %o...`, id)
     const res = await query({ noun: `fleets?id=eq.${id}&select=*,planet:planet_id(*),target:target_id(*)` })
-
     if (!res.ok) {
       return showErr(ctx, `Can't find fleet "${id}" not valid.`, $, 404)
     }
-
     const data = await res.json() as Fleet[]
-    $(`Raw=%o`, data)
-
     if (data.length < 1) {
       return showErr(ctx, `Can't find fleet "${id}".`, $, 404)
     }
-
     const input = data[0]
+    $(`Input=%O`, data)
     const template = require('../templates/Fleet.marko')
     ctx.type = 'html'
     ctx.body = template.stream(input)
