@@ -5,7 +5,7 @@ class {
       index: input.index || 0,
       is_base: input.is_base || false,
       ships: input.ships || 0,
-      is_warping: input.is_warping || false,
+      is_warping: input.state === 1 || false,
       planet_id: input.planet_id || 0,
       is_attacking: input.is_attacking || 0,
       attack: "",

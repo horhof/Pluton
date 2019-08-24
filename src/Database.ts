@@ -16,15 +16,13 @@ interface QueryArgs {
   headers?: { [key: string]: string }
 }
 
-const JSON_CONTENT = 'application/json'
-
 export const query =
   async (args: QueryArgs) => {
     const $ = log(`query`)
 
     defaults(args, {
       verb: 'get',
-      contentType: JSON_CONTENT,
+      contentType: 'application/json',
       returnRepresentation: false,
       mergeDuplicates: false,
       headers: {},

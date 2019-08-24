@@ -1,30 +1,42 @@
-import { Int, N } from '../types/Number'
+import { Int, N, ID } from '../types/Number'
 import { Planet } from './Planet'
 
+export enum FleetState {
+  /** Sitting idle at its home planet. Can WARP. */
+  HOME = 1,
+  /** Moving to a remote planet. Can ARRIVE or RETURN. */
+  WARP = 2,
+  /** Arrived at remote planet. Can RETURN. */
+  ARRIVE = 3,
+  /** Warping in the other direction. Can reach HOME. */
+  RETURN = 4,
+}
+
 export interface Fleet {
-  id: N
+  id: ID
   /** E.g. "Space Legion XIII". */
   name: string
   /** The order of the fleet within its planet, e.g. 13. */
-  index: N
+  index: ID
   /** Whether this fleet is an immovable base bound to the planet or mobile. */
   is_base: boolean
-  ships: Int
+  ships: N
   /** Whether this fleet is attacking its target or defending it. */
   is_attacking: boolean
-  /** Whether this fleet is en route to a destination. */
-  is_warping: boolean
-  /** If warping, how many ticks remaing until arrival. */
-  eta: Int
   /** The ID of the owning planet. */
-  planet_id: Int
+  planet_id: ID
   planet: Planet
   /** The ID of the planet this fleet is en route to. */
-  target_id: Int | null
+  target_id: ID | null
   target: Planet
-  /** The total travel time to target. */
-  warp_time: Int
-  /** The number of the tick that the fleet has got to retreat on. */
-  return_tick: Int
-  ruler: string
+  /** How many ticks in the total trip from home to destination. */
+  warp_time: N
+  /**
+   * How many ticks away from home.
+   *
+   * This starts at 0 and increments up to warp_time. When returning back home,
+   * it decrements back to 0.
+   */
+  from_home: N
+  state: FleetState
 }

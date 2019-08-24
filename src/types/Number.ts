@@ -6,6 +6,9 @@ export type Int = number
 /** A natural number including zero. */
 export type N = number
 
+/** A natural number excluding zero. */
+export type ID = number
+
 export type Float = number
 
 const isFloat =

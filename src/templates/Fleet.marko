@@ -23,9 +23,9 @@
         </tr>
         <tr>
           <th>Warping</th>
-          <td>${input.is_warping ? "Yes" : "No"}</td>
+          <td>${input.state !== 0 ? "Yes" : "No"}</td>
         </tr>
-        <if(input.is_warping)>
+        <if(input.state !== 0)>
           <tr>
             <th>Target</th>
             <td>
