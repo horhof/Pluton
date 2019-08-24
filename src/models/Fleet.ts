@@ -1,4 +1,4 @@
-import { Int, N, ID } from '../types/Number'
+import { ID, N } from '../types/Number'
 import { Planet } from './Planet'
 
 export enum FleetState {

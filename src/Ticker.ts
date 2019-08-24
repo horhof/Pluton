@@ -92,9 +92,11 @@ export class Ticker {
     const fleets = await readRes.json() as Fleet[]
 
     forEach(fleets, b => {
+      /*
       const newEta = b.eta - 1
       $(`Decreasing ETA of fleet %o from %o to %o`, b.id, b.eta, newEta)
       b.eta = newEta
+      */
     })
 
     const updateRes = await query({

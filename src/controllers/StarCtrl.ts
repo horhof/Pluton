@@ -1,8 +1,8 @@
-import { chain } from 'lodash'
-import { query } from '../Database'
 import { stampLog } from '../Log'
-import { Star } from '../models/Star'
+import { getStar } from '../models/Star'
 import { Ctx, showErr } from '../Server'
+import { isLeft } from '../types/Either'
+import { getProperty } from './validation'
 
 const log = stampLog(`Http:Star`)
 
@@ -11,22 +11,23 @@ export const readStar =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`readStar`)
 
-    const id = chain(ctx.params).get('id').toNumber().value()
+    $(`Parsing parameters...`)
+    const id = getProperty<number>(ctx.params, 'id', isFinite, Number)
 
-    if (!isFinite(id)) {
-      return showErr(ctx, `ID "${id}" not valid.`, $, 400)
+    if (!id) {
+      return showErr(ctx, `"${id}" is not a valid ID.`, $, 400)
     }
 
-    const res = await query({ noun: `stars?id=eq.${id}&select=*,planets(*)` })
+    $(`Done. Fetching star %o...`, id)
+    const res = await getStar(id)
 
-    if (!res.ok) {
-      return showErr(ctx, `Star ID "${id}" not valid.`, $, 400)
+    if (isLeft(res)) {
+      return showErr(ctx, `Star "${id}" not found.`, $, 404)
     }
+    const star = res
+    $(`Done. Star=%o`, star)
 
-    const body = await res.json() as Star[]
-
-    const input = body[0]
     const template = require('../templates/Star.marko')
     ctx.type = 'html'
-    ctx.body = template.stream(input)
+    ctx.body = template.stream(star)
   }

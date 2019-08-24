@@ -1,4 +1,4 @@
-import { Int, N, ID } from '../types/Number'
+import { ID } from '../types/Number'
 import { Fleet } from './Fleet'
 import { Star } from './Star'
 
