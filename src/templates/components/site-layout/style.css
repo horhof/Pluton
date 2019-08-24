@@ -2,7 +2,7 @@
 
 #container {
   color: #222;
-  font-family: "Helvetica", serif;
+  font-family: "Helvetica Neue", "Helvetica", sans-serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 1.5;
@@ -19,6 +19,7 @@ body {
 }
 
 footer {
+  font-size: 80%;
   text-align: center;
 }
 
@@ -30,9 +31,7 @@ h1 {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  border: none;
-  color: black;
-  font-family: "Helvetica", serif;
+  font-family: "Helvetica Neue", "Helvetica", sans-serif;
   margin: 0;
   margin-bottom: 1rem;
   margin-top: 1rem;
@@ -109,7 +108,14 @@ hr + p, table + p, ol + p, ul + p, pre + p {
 code,
 pre {
   background: none;
-  font-family: "Fantasque Sans Mono", "Courier Prime", "PT Mono", "Fira Code", monospace;
+}
+
+.id,
+code,
+pre,
+textarea,
+input {
+  font-family: "Courier Prime", "Fantasque Sans Mono", "PT Mono", "Fira Code", monospace;
 }
 
 pre {
@@ -137,38 +143,42 @@ a:hover {
 
 /* Tables. */
 
-table tr, table td, table th {
-  border: none;
-  padding: 0.25em 0.5em;
-}
-
 table {
   border-spacing: 0;
-  display: table;
   margin: 0 auto 1rem 0;
   padding: 0;
   width: auto;
 }
 
-th + td {
-  border-left: 1px solid #444;
+th {
+  border-bottom: 2px solid black;
 }
 
-table tr {
-  background: none;
+th,
+td {
+  padding: 0.3rem 0.5rem;
 }
 
-table td {
-  padding: 0;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+td {
+  border-bottom: 1px solid black;
 }
 
-/*
+/* Last cells don't have bottom borders. */
 tr:last-child td {
-  border: none;
+  border-bottom: none;
 }
-*/
+
+/* Horizontal tables with the header cells on the left. */
+
+table.horz th {
+  text-align: right;
+  border-bottom: none;
+  border-right: 1px solid black;
+}
+
+table.horz td {
+  border-bottom: none;
+}
 
 /* Quotes. */
 
@@ -193,10 +203,6 @@ blockquote > p + p {
   margin-top: 1rem;
 }
 
-.cmd {
-  font-style: italic;
-}
-
 .form-group {
   margin-bottom: 1rem;
 }
@@ -211,26 +217,49 @@ label {
 
 textarea,
 input {
-  font-size: 100%;
-  font-family: "Fantasque Sans Mono", "Courier Prime", "PT Mono", "Fira Code", monospace;
+  font-size: 90%;
 }
 
 input {
-  padding: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid #888;
+  border-radius: 3px;
 }
 
 textarea {
   padding: 1rem;
 }
 
-button {
-  padding: 0.4rem 0.5rem 0.5rem 0.4rem;
-  background: white;
-  border: 1px solid #333;
-  font-size: 100%;
+a.button {
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
+  text-decoration: none;
+  color: initial;
 }
 
-/* Classes */
+a.button,
+button {
+  padding: 0.2rem 0.5rem 0.3rem 0.4rem;
+  margin-right: 0.5em;
+  background: white;
+  border: 1px solid #888;
+  font-size: 100%;
+  border-radius: 3px;
+  cursor: default;
+}
+
+/* Loose classes */
+
+.attacking {
+  border-color: #c64444;
+  color: #c64444;
+}
+
+.defending {
+  border-color: #408440;
+  color: #408440;
+}
 
 .center {
   text-align: center;
@@ -238,4 +267,9 @@ button {
 
 .right {
   text-align: right;
+}
+
+.debug {
+  color: #AAA;
+  font-size: 70%;
 }

@@ -2,6 +2,21 @@
   <@title>Cluster ${input.index}</@title>
   <@content>
     <h1>Cluster ${input.index}</h1>
+    <table.horz>
+      <tbody>
+        <tr>
+          <th>ID</th>
+          <td.id>
+            <a href=`${input.index}.html`>/clusters/${input.index}.html</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      View
+      <a href=`../clusters.html`>all clusters</a>.
+    </p>
+    <h2>Stars</h2>
     <ol>
       <for|star| of=input.stars>
         <li>
@@ -9,5 +24,9 @@
         </li>
       </for>
     </ol>
+    <div.debug>
+      <h2>Debug</h2>
+      <pre>${JSON.stringify(input, undefined, 2)} </pre>
+    </div>
   </@content>
 </site-layout>

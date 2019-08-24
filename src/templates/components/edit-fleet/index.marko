@@ -2,11 +2,7 @@ class {
   onCreate(input) {
     this.state = {
       name: input.name || "",
-      index: input.index || 0,
-      moving: input.moving || false,
-      mobile: input.mobile || false,
-      planet_id: input.planet_id || 0,
-      size: input.size || 0
+      target_id: input.target_id || 0
     };
   }
 
@@ -20,11 +16,10 @@ class {
   }
 
   onClick(ev, elem) {
-    console.log(`State=`, this.state);
-    const portId = this.state.name;
-    const url = `new.json`;
+    const url = `${this.input.id}.json`;
     console.log(`Url=%o Body=%o`, url, this.state);
-    const req = new Request(url, { method: "POST", body: JSON.stringify(this.state), headers: { "Content-Type": "application/json" } });
+    const req = new Request(url, { method: "PUT", body: JSON.stringify(this.state), headers: { "Content-Type": "application/json" } });
+    //const req = new Request(url, { method: "POST", body: JSON.stringify([this.state]), headers: { "Content-Type": "application/json", Prefer: "resolution:merge-duplicates" } });
 
     fetch(req)
       .catch(err => err)
@@ -42,18 +37,12 @@ class {
   }
 }
 
-<div.form-group>
-  <p>
-    <label>Name</label>
-    <input.edit title="Name" type="text" value=state.name name="name" on-change("onEditInput")/>
-  </p>
-  <p>
-    <label>Index</label>
-    <input.edit title="Index" type="number" value=state.index name="index" on-change("onEditInput")/>
-  </p>
-  <p>
-    <label>Planet ID</label>
-    <input.edit title="Star ID" type="number" value=state.planet_id name="planet_id" on-change("onEditInput")/>
-  </p>
+<div>
+  <div.form-group>
+    <p>
+      <label>Name</label>
+      <input name="name" value=state.name on-change("onEditInput")/>
+    </p>
+  </div>
+  <button on-click("onClick")>Save</button>
 </div>
-<button on-click("onClick")>Create</button>

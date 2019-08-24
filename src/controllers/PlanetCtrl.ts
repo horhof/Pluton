@@ -1,12 +1,13 @@
-import { chain, get } from 'lodash'
-import { query } from '../Database'
+import { assign, chain, get } from 'lodash'
+import { query, getNextIndex, getCreatedId } from '../Database'
 import { stampLog } from '../Log'
-import { Planet } from '../Planet'
-import { Ctx, showErr } from '../Server'
+import { Planet } from '../models/Planet'
+import { Star } from '../models/Star'
+import { Ctx, showErr, sendErr } from '../Server'
 
 const log = stampLog(`Http:Planet`)
 
-/** GET /planets/1.html */
+/** GET /planets/<ID>.html */
 export const readPlanet =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`readPlanet`)
@@ -30,7 +31,6 @@ export const readPlanet =
     }
 
     const input = data[0]
-    $(`Input=%O`, input)
     const template = require('../templates/Planet.marko')
     ctx.type = 'html'
     ctx.body = template.stream(input)
@@ -41,13 +41,21 @@ export const createPlanetForm =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`createPlanetForm`)
 
-    const query = ctx.request.query || {}
-    $(`Qs=%o`, query)
-    const { star_id } = query
+    const qs = ctx.request.query || {}
+    const { star_id } = qs
+    if (!star_id) {
+      return showErr(ctx, `Need a star to create this planet under.`, $, 400)
+    }
 
-    const template = require('../templates/CreatePlanet.marko')
+    const res = await query({ noun: `stars?id=eq.${star_id}` })
+    if (!res.ok) {
+      return showErr(ctx, `Can't find star "${star_id}".`, $, 404)
+    }
+    const [star] = await res.json() as Star[]
+
+    const template = require('../templates/NewPlanet.marko')
     ctx.type = 'html'
-    ctx.body = template.stream({ star_id })
+    ctx.body = template.stream({ star })
   }
 
 /** POST /planets/new.json */
@@ -55,39 +63,65 @@ export const createPlanet =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`createPlanet`)
 
+    $(`Processing parameters...`)
     const args = ctx.request.body
     const name = get(args, 'name')
+    const ruler = get(args, 'ruler')
     const star_id = get(args, 'star_id')
-    const index = get(args, 'index')
-    const planet = { name, star_id, index }
 
-    $(`Creating planet... Planet=%o`, planet)
-    const planetRes = await query({ verb: 'post', noun: 'planets', body: planet })
-
-    if (!planetRes.ok) {
-      return showErr(ctx, `Failed to create planet "${JSON.stringify(planet)}".`, $, planetRes.status)
+    if (!name) {
+      return sendErr(ctx, `No planet name was given.`, $, 400)
     }
 
-    const h = planetRes.headers.get('location') || ''
-    const m = h.match(/(\d+)/)
-    const id = m && m[1]
+    if (!ruler) {
+      return sendErr(ctx, `No ruler name was given.`, $, 400)
+    }
 
-    $(`Planet created. Creating home fleet... PlanetId=%o`, id)
-    const fleetRes = await query({
+    if (!star_id) {
+      return sendErr(ctx, `No star ID was given.`, $, 400)
+    }
+
+    const planet = { name, ruler, star_id }
+    $(`Done. Planet=%o`, planet)
+
+    $(`Getting the next index for this star...`)
+    const index = await getNextIndex('stars', star_id, 'planets')
+    $(`Done. Index=%o`, index)
+    assign(planet, { index })
+
+    $(`Creating planet...`)
+    const res1 = await query({ verb: 'post', noun: 'planets', body: planet })
+
+    if (!res1.ok) {
+      const body = await res1.json()
+      $(`Err=%o`, body)
+      return sendErr(ctx, `Failed to create planet: ${body.message}`, $, res1.status)
+    }
+    $(`Done. Planet created.`)
+
+    const id = getCreatedId(res1.headers)
+    if (!id) {
+      return sendErr(ctx, `Failed to get created fleet.`, $, 500)
+    }
+
+    $(`Planet created. Creating base... PlanetId=%o`, id)
+    const res2 = await query({
       verb: 'post',
       noun: 'fleets',
       body: {
-        name: `${name} Planetary Defense`,
+        name: `${planet.name} Base`,
         index: 1,
         planet_id: id,
-        mobile: false,
+        is_base: true,
       },
     })
 
-    if (!fleetRes.ok) {
-      return showErr(ctx, `Failed to create home fleet planet ${id}.`, $, fleetRes.status)
+    if (!res2.ok) {
+      $(`Failed creating base. Res=%O`, await res2.json())
+      return sendErr(ctx, `Failed to create home fleet planet ${id}.`, $, res2.status)
     }
 
     $(`Home fleet created. Done.`)
-    ctx.body = { url: `/planets/${id}.html` }
+    //ctx.body = { url: `/planets/${id}.html` }
+    ctx.body = { url: `${id}.html` }
   }

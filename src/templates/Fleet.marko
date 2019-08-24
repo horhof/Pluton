@@ -1,7 +1,52 @@
+<!-- This page views data about the fleet and allows some fields to be edited. -->
 <site-layout>
   <@title>Fleet ${input.name}</@title>
   <@content>
     <h1>${input.name}</h1>
-    <edit-fleet(input)/>
+    <table.horz>
+      <tbody>
+        <tr>
+          <th>ID</th>
+          <td.id>
+            <a href=`../fleets/${input.id}.html`>/fleets/${input.id}.html</a>
+          </td>
+        </tr>
+        <tr>
+          <th>Planet</th>
+          <td>
+            <a href=`../planets/${input.planet.id}.html`>${input.planet.name}</a>
+          </td>
+        </tr>
+        <tr>
+          <th>Ships</th>
+          <td>${input.ships}</td>
+        </tr>
+        <tr>
+          <th>Warping</th>
+          <td>${input.is_warping ? "Yes" : "No"}</td>
+        </tr>
+        <if(input.is_warping)>
+          <tr>
+            <th>Target</th>
+            <td>
+              <a href=`../planets/${input.target.id}.html`>${input.target.name}</a>
+            </td>
+          </tr>
+          <tr>
+            <th>Warp ETA</th>
+            <td>${input.eta} ticks</td>
+          </tr>
+        </if>
+      </tbody>
+    </table>
+    <h2>Edit</h2>
+    <edit-fleet ...input/>
+    <if(!input.is_base)>
+      <send-fleet ...input/>
+    </if>
+    <div.debug>
+      <h2>Input</h2>
+      <pre>${JSON.stringify(input, undefined, 2)} </pre>
+    </div>
   </@content>
 </site-layout>

@@ -1,0 +1,29 @@
+<!--
+This page shows boxes and links to all of the clusters in the universe.
+-->
+style {
+  .clusters li {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border: 1px solid #888;
+    text-align: center;
+    margin: 0.5rem;
+    border-radius: 3px;
+  }
+}
+
+<site-layout>
+  <@title>Universe</@title>
+  <@content>
+    <h1>Universe</h1>
+    <ol.clusters>
+      <for|index| of=input>
+        <li>
+          <a href=`../clusters/${index}.html`>${index}</a>
+        </li>
+      </for>
+    </ol>
+  </@content>
+</site-layout>

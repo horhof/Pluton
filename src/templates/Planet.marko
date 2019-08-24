@@ -2,8 +2,14 @@
   <@title>Planet ${input.name}</@title>
   <@content>
     <h1>${input.name}</h1>
-    <table>
+    <table.horz>
       <tbody>
+        <tr>
+          <th>ID</th>
+          <td.id>
+            <a href=`../planets/${input.id}.html`>/planets/${input.id}.html</a>
+          </td>
+        </tr>
         <tr>
           <th>Coords</th>
           <td.id>
@@ -11,7 +17,11 @@
           </td>
         </tr>
         <tr>
-          <th>Parent</th>
+          <th>Ruler</th>
+          <td>${input.ruler}</td>
+        </tr>
+        <tr>
+          <th>Star</th>
           <td>
             <a href=`../stars/${input.star.id}.html`>${input.star.name}</a>
           </td>
@@ -19,29 +29,43 @@
       </tbody>
     </table>
     <h2>Fleets</h2>
-    <table>
-      <thead>
-        <tr>
-          <th.center>PD</th>
-          <th.center>No.</th>
-          <th>Name</th>
-          <th.right>Size</th>
-          <th.center>Mode</th>
-        </tr>
-      </thead>
-      <tbody>
-        <for|key, row| in=input.fleets>
+    <if(input.fleets.length > 0)>
+      <table>
+        <thead>
           <tr>
-            <td.center>${row.mobile ? "N" : "Y"}</td>
-            <td.center>${row.index}</td>
-            <td>
-              <a href=`../fleets/${row.id}.html`>${row.name}</a>
-            </td>
-            <td.right>${row.size}</td>
-            <td.center>${row.attacking ? "Attack" : "Defend"}</td>
+            <th.center>No.</th>
+            <th>Name</th>
+            <th.right>Ships</th>
+            <th.center>Mission</th>
           </tr>
-        </for>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <for|key, row| in=input.fleets>
+            <tr>
+              <td.center>${row.index}</td>
+              <td>
+                <a href=`../fleets/${row.id}.html`>${row.name}</a>
+              </td>
+              <td.id.right>${row.ships}</td>
+              <td.center>
+                <if(row.is_attacking)>
+                  <span class="attacking">Attack</span>
+                </if>
+                <else>
+                  <span class="defending">Defend</span>
+                </else>
+              </td>
+            </tr>
+          </for>
+        </tbody>
+      </table>
+    </if>
+    <p>
+      <a.button href=`../fleets/new.html?planet_id=${input.id}`>Create</a>
+    </p>
+    <div.debug>
+      <h2>Debug</h2>
+      <pre>${JSON.stringify(input, undefined, 2)} </pre>
+    </div>
   </@content>
 </site-layout>

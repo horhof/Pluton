@@ -1,7 +1,9 @@
-// This module defines the HTTP server that allows viewing packets and ports.
+// This module defines the HTTP server that allows viewing pages, reading data,
+// and writing data.
 //
 // Functions:
 // - Create server
+// - Show err
 
 import Koa from 'koa'
 import mount from 'koa-mount'
@@ -43,6 +45,7 @@ export const createServer =
     app.use(router.routes())
 
     app.use(async ctx => {
+      // We don't have a favicon.
       if (get(ctx.req, 'url', '').match(/favicon\.ico$/)) return
 
       $(`No route was matched for this request. Ctx=%O`, ctx)
@@ -51,6 +54,7 @@ export const createServer =
     return app
   }
 
+/** Log and show an error page with the given message and HTTP response code. */
 export const showErr =
   (ctx: Ctx, msg: string, logger: Logger, code = 500): void => {
     logger(msg)
@@ -58,4 +62,12 @@ export const showErr =
     ctx.status = code
     ctx.type = 'html'
     ctx.body = template.stream({ code, msg })
+  }
+
+/** Log and send a JSON response with the given message and HTTP response code. */
+export const sendErr =
+  (ctx: Ctx, msg: string, logger: Logger, code = 500): void => {
+    logger(msg)
+    ctx.status = code
+    ctx.body = { code, msg }
   }
