@@ -7,13 +7,13 @@ export type Maybe<L> = void | Left<L>
 export class Left<T> {
   constructor(
     public code: T,
-    public message?: string,
+    public message: string,
   ) { }
 }
 
 export const left =
   <T>(code: T, message?: string): Left<T> =>
-    new Left(code, message)
+    new Left(code, message || `Error ${code}`)
 
 export const isLeft =
   <T>(x: any): x is Left<T> =>

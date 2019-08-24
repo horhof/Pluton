@@ -1,9 +1,11 @@
-import { assign, chain, get } from 'lodash'
-import { query, getNextIndex, getCreatedId } from '../Database'
+import { assign, get } from 'lodash'
+import { getCreatedId, getNextIndex, query } from '../Database'
 import { stampLog } from '../Log'
-import { Planet } from '../models/Planet'
+import { getPlanet } from '../models/Planet'
 import { Star } from '../models/Star'
-import { Ctx, showErr, sendErr } from '../Server'
+import { Ctx, sendErr, showErr } from '../Server'
+import { isLeft } from '../types/Either'
+import { getProperty } from './validation'
 
 const log = stampLog(`Http:Planet`)
 
@@ -11,29 +13,20 @@ const log = stampLog(`Http:Planet`)
 export const readPlanet =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`readPlanet`)
-
-    const id = chain(ctx.params).get('id').toNumber().value()
-
-    if (!isFinite(id)) {
-      return showErr(ctx, `"${id}" is not a valid planet ID.`, $, 400)
+    $(`Parsing parameters...`)
+    const id = getProperty<number>(ctx.params, 'id', Number, isFinite)
+    if (!id) {
+      return showErr(ctx, `"${id}" is not a valid ID.`, $, 400)
     }
-
-    const res = await query({ noun: `planets?id=eq.${id}&select=*,star:stars(*),fleets(*)&fleets.order=index.asc` })
-
-    if (!res.ok) {
-      return showErr(ctx, `Can't find planet "${id}" not valid.`, $, 404)
+    $(`Done. Fetching planet %o...`, id)
+    const res = await getPlanet(id)
+    if (isLeft(res)) {
+      return showErr(ctx, res.message, $, 404)
     }
-
-    const data = await res.json() as Planet[]
-
-    if (data.length < 1) {
-      return showErr(ctx, `Can't find planet "${id}".`, $, 404)
-    }
-
-    const input = data[0]
+    const planet = res
     const template = require('../templates/Planet.marko')
     ctx.type = 'html'
-    ctx.body = template.stream(input)
+    ctx.body = template.stream(planet)
   }
 
 /** GET /planets/new.html */

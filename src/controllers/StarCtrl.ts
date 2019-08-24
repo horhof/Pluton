@@ -10,23 +10,18 @@ const log = stampLog(`Http:Star`)
 export const readStar =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`readStar`)
-
     $(`Parsing parameters...`)
-    const id = getProperty<number>(ctx.params, 'id', isFinite, Number)
-
+    const id = getProperty<number>(ctx.params, 'id', Number, isFinite)
     if (!id) {
       return showErr(ctx, `"${id}" is not a valid ID.`, $, 400)
     }
-
     $(`Done. Fetching star %o...`, id)
     const res = await getStar(id)
-
     if (isLeft(res)) {
-      return showErr(ctx, `Star "${id}" not found.`, $, 404)
+      return showErr(ctx, res.message, $, 404)
     }
     const star = res
-    $(`Done. Star=%o`, star)
-
+    $(`Done. Rendering template... Star=%o`, star)
     const template = require('../templates/Star.marko')
     ctx.type = 'html'
     ctx.body = template.stream(star)

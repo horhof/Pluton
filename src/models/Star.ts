@@ -17,13 +17,13 @@ export enum StarErr {
 export const getStar =
   async (id: ID): AsyncEither<StarErr, Star> => {
     const res = await query({ noun: `stars?id=eq.${id}&select=*,planets(*)` })
-
     if (!res.ok) {
-      return left(StarErr.LOOKUP, `Failed to look up star with ID "${id}".`)
+      return left(StarErr.LOOKUP, `Failed to query for star "${id}".`)
     }
-
     const body = await res.json() as Star[]
     const [star] = body
-
+    if (!star) {
+      return left(StarErr.LOOKUP, `No star with ID "${id}".`)
+    }
     return star
   }
