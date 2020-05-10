@@ -1,8 +1,9 @@
 import { assign, defaults, get } from 'lodash'
 import Fetch from 'node-fetch'
 import { stampLog } from './Log'
-import { AsyncEither, left } from './types/Either'
-import { ID } from './types/Number'
+import { AsyncEither, left, Maybe } from './types/Either'
+import { spawn } from 'child_process'
+import * as fs from 'fs'
 
 const log = stampLog(`Database`)
 
@@ -22,6 +23,12 @@ enum QueryErr {
   QUERY,
   EMPTY_SET,
 }
+
+export const start =
+  async (): Promise<Maybe<void>> => {
+    const config = 'postgrest.cfg'
+    spawn('postgrest', ['postgrest.cfg'])
+  }
 
 export const query =
   async (args: QueryArgs) => {

@@ -1,7 +1,7 @@
 import { assign, chain, get } from 'lodash'
 import { getCreatedId, getInstance, getNextIndex, query } from '../Database'
 import { stampLog } from '../Log'
-import { Fleet } from '../models/Fleet'
+import { Fleet, FleetState } from '../models/Fleet'
 import { Planet } from '../models/Planet'
 import { Ctx, sendErr, showErr } from '../Server'
 import { isLeft } from '../types/Either'
@@ -33,32 +33,33 @@ export const readFleet =
 export const updateFleet =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`updateFleet`)
-
-    const id = chain(ctx.params).get('id').toNumber().value()
-
-    if (!isFinite(id)) {
-      return showErr(ctx, `"${id}" is not a valid fleet ID.`, $, 400)
-    }
-
+    const id = getProperty<number>(ctx.params, 'id', Number, isFinite)
     const noun = `fleets?id=eq.${id}`
     const body = ctx.request.body
     assign(body, { id })
     $(`Noun=%o Body=%o`, noun, body)
-
+    if (body.target_id) {
+      if (body.from_home > 0) {
+        return sendErr(ctx, `Fleet ${id} can't be given a target. It's ${body.from_home} ticks from home.`, $, 400)
+      }
+      $(`Fleet %o has a target: planet %o.`, id, body.target_id)
+      body.warp_time = 6
+      body.from_home = 0
+      body.state = FleetState.WARP
+      $(`Fleet=%o`, body)
+    }
     $(`Sending update for fleet %o...`, id)
     const res = await query({
       verb: 'patch',
       noun,
       body: [body],
     })
-
     if (!res.ok) {
       $(`Response was not OK.`)
       const body = await res.json()
       $(`Err=%o`, body)
       return sendErr(ctx, body.message, $, res.status)
     }
-
     $(`Success. Redirecting back to fleet %o.`, id)
     ctx.body = { url: `${id}.html` }
   }

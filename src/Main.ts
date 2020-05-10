@@ -4,16 +4,20 @@ import { get } from 'lodash'
 import { stampLog } from './Log'
 import { createServer } from './Server'
 import { Ticker } from './Ticker'
+import * as Database from './Database'
 
 const log = stampLog(`Main`)
 const $ = log()
 
 const main =
   async () => {
+    $(`Starting database service...`)
+    await Database.start()
+
+    $(`Starting HTTP server...`)
     const prefix = get(process.env, 'BASE_URL', '')
     const port = get(process.env, 'PORT', 3000)
     const server = await createServer(prefix)
-
     await server.listen(port)
     $(`HTTP server listening at http://localhost:${port}${prefix ? `/${prefix}` : ''}`)
 
