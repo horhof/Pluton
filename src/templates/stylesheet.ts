@@ -214,6 +214,7 @@ export const template = `
 
   label {
     margin-right: 1rem;
+    font-weight: 600;
   }
 
   textarea,

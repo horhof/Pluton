@@ -1,4 +1,5 @@
 import { template as css } from './stylesheet'
+import { template as js } from './common'
 
 export const template = `
   <!DOCTYPE html>
@@ -17,9 +18,12 @@ export const template = `
       <div id="container">
         <!-- content -->
         <footer>
-          <a href='/'>Home</a>
+          <a href="/">Home</a>
         </footer>
       </div>
+      <script>
+        ${js}
+      </script>
     </body>
   </html>
 `;

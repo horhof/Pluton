@@ -24,6 +24,7 @@ const bind =
 
     router.get(`${prefix}/planets/new.html`, PlanetCtrl.createPlanetForm)
     router.post(`${prefix}/planets/new.json`, koaBody(), PlanetCtrl.createPlanet)
+    router.get(`${prefix}/planets/create.html`, PlanetCtrl.createPlanet2)
     router.get(`${prefix}/planets/:id.html`, PlanetCtrl.readPlanet)
 
     router.get(`${prefix}/fleets/new.html`, FleetCtrl.createFleetForm)

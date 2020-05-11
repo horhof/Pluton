@@ -6,6 +6,7 @@ import { Star } from '../models/Star'
 import { Ctx, sendErr, showErr } from '../Server'
 import { isLeft } from '../types/Either'
 import { getProperty } from './validation'
+import { render as renderNewPlanet } from '../templates/newPlanet'
 
 const log = stampLog(`Http:Planet`)
 
@@ -46,9 +47,8 @@ export const createPlanetForm =
     }
     const [star] = await res.json() as Star[]
 
-    const template = require('../templates/NewPlanet.marko')
     ctx.type = 'html'
-    ctx.body = template.stream({ star })
+    ctx.body = renderNewPlanet(star_id, star)
   }
 
 /** POST /planets/new.json */
@@ -117,4 +117,72 @@ export const createPlanet =
     $(`Home fleet created. Done.`)
     //ctx.body = { url: `/planets/${id}.html` }
     ctx.body = { url: `${id}.html` }
+  }
+
+/** GET /planets/create.html, { star_id, name, ruler } */
+export const createPlanet2 =
+  async (ctx: Ctx): Promise<void> => {
+    const $ = log(`createPlanet`)
+
+    $(`Processing parameters...`)
+    const args = ctx.request.query
+    const name = get(args, 'name')
+    const ruler = get(args, 'ruler')
+    const star_id = get(args, 'star_id')
+
+    if (!name) {
+      return sendErr(ctx, `No planet name was given.`, $, 400)
+    }
+
+    if (!ruler) {
+      return sendErr(ctx, `No ruler name was given.`, $, 400)
+    }
+
+    if (!star_id) {
+      return sendErr(ctx, `No star ID was given.`, $, 400)
+    }
+
+    const planet = { name, ruler, star_id }
+    $(`Done. Planet=%o`, planet)
+
+    $(`Getting the next index for this star...`)
+    const index = await getNextIndex('stars', star_id, 'planets')
+    $(`Done. Index=%o`, index)
+    assign(planet, { index })
+
+    $(`Creating planet...`)
+    const res1 = await query({ verb: 'post', noun: 'planets', body: planet })
+
+    if (!res1.ok) {
+      const body = await res1.json()
+      $(`Err=%o`, body)
+      return sendErr(ctx, `Failed to create planet: ${body.message}`, $, res1.status)
+    }
+    $(`Done. Planet created.`)
+
+    const id = getCreatedId(res1.headers)
+    if (!id) {
+      return sendErr(ctx, `Failed to get created fleet.`, $, 500)
+    }
+
+    $(`Planet created. Creating base... PlanetId=%o`, id)
+    const res2 = await query({
+      verb: 'post',
+      noun: 'fleets',
+      body: {
+        name: `${planet.name} Base`,
+        index: 1,
+        planet_id: id,
+        is_base: true,
+      },
+    })
+
+    if (!res2.ok) {
+      $(`Failed creating base. Res=%O`, await res2.json())
+      return sendErr(ctx, `Failed to create home fleet planet ${id}.`, $, res2.status)
+    }
+
+    $(`Home fleet created. Done.`)
+    //ctx.body = { url: `/planets/${id}.html` }
+    ctx.redirect(`${id}.html`)
   }
