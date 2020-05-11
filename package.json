@@ -3,6 +3,7 @@
   "version": "0.3.0",
   "dependencies": {
     "@lasso/marko-taglib": "^1.0.15",
+    "@types/pg": "^7.14.3",
     "debug": "^3.2.6",
     "koa": "^2.7.0",
     "koa-body": "^4.1.1",
@@ -15,6 +16,7 @@
     "marko": "^4.18.11",
     "node-fetch": "^2.6.0",
     "nodemon": "^1.19.1",
+    "pg": "^8.1.0",
     "ramda": "^0.26.1",
     "ts-node": "^3.3.0",
     "typescript": "^3.8.3"
