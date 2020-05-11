@@ -53,9 +53,9 @@ export const query =
       const header = get(headers, 'Prefer', []) as string[]
       header.push('resolution=merge-duplicates')
       assign(headers, { Prefer: header })
-      $(`Headers=%o`, headers)
+      // $(`Headers=%o`, headers)
     }
-    $(`Headers=%o`, headers)
+    // $(`Headers=%o`, headers)
     const res = await Fetch(`http://localhost:4000/${noun}`, {
       method: verb,
       body: bodyStr,

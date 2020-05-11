@@ -3,17 +3,18 @@
 import { forEach } from 'lodash'
 import { query } from './Database'
 import { stampLog } from './Log'
-import { Fleet } from './models/Fleet'
+import { Fleet, FleetState } from './models/Fleet'
+import { conn } from './db/conn'
 
 const log = stampLog(`Ticker`)
 
-const DISABLE_TICKER = true
+const DISABLE_TICKER = false
 
 export class Ticker {
   tick = 0
 
   /** One tick every minute. */
-  intervalMs = 60000
+  intervalMs = 10000
 
   start(): void {
     this.run()
@@ -46,31 +47,38 @@ export class Ticker {
    * The base of each planet is given a fixed number of ships per tick.
    */
   private async allocateShips(): Promise<void> {
-    const $ = log(`distributeNewShips`)
+    const $ = log(`allocateShips`)
 
-    const readRes = await query({ noun: 'base_fleets' })
-
-    if (!readRes.ok) {
-      throw new Error(`Failed to read planets`)
+    const res = await conn.selectRows(`
+        SELECT
+          id
+        , name
+        , index
+        , planet_id
+        , ships
+        FROM base_fleets
+      `, [], v => ({
+        id: v.id as number,
+        name: v.name as string,
+        index: v.index as number,
+        planet_id: v.planet_id as number,
+        ships: v.ships as number,
+      }))
+    if (res instanceof Error) {
+      throw res
     }
+    const bases = res
 
-    const bases = await readRes.json() as Fleet[]
-    forEach(bases, b => {
-      b.ships += 1
+    forEach(bases, async b => {
+      const res = await conn.query(`
+        UPDATE fleets
+        SET ships = ships + 1
+        WHERE id = $1
+      `, [b.id])
+      if (res instanceof Error) {
+        throw res
+      }
     })
-
-    const updateRes = await query({
-      verb: 'post',
-      noun: 'fleets',
-      body: bases,
-      headers: { Prefer: 'resolution=merge-duplicates' },
-    })
-
-    if (!updateRes.ok) {
-      const json = await updateRes.json()
-      $(`Failed to update planets. Res=%o`, json)
-      throw new Error
-    }
   }
 
   private async fight(): Promise<void> {
@@ -82,21 +90,22 @@ export class Ticker {
   private async move(): Promise<void> {
     const $ = log(`move`)
 
-    const readRes = await query({ noun: 'fleets?is_base=is.false&is_warping=is.true&eta=gt.0' })
-
+    const readRes = await query({ noun: `fleets?is_base=is.false&state=eq.${FleetState.WARP}` })
     if (!readRes.ok) {
       $(`Failed to read fleets. Res=%O`, await readRes.json())
       throw new Error(`Failed to read fleets.`)
     }
 
     const fleets = await readRes.json() as Fleet[]
-
     forEach(fleets, b => {
-      /*
-      const newEta = b.eta - 1
-      $(`Decreasing ETA of fleet %o from %o to %o`, b.id, b.eta, newEta)
-      b.eta = newEta
-      */
+      if (b.from_home !== b.warp_time) {
+        const newFromHome = b.from_home + 1
+        $(`Moving fleet %o from %o to %o ticks from home`, b.id, b.from_home, newFromHome)
+        b.from_home = newFromHome
+      }
+      else {
+        $(`Fleet %o has arrived.`, b.id)
+      }
     })
 
     const updateRes = await query({
@@ -105,7 +114,6 @@ export class Ticker {
       body: fleets,
       headers: { Prefer: 'resolution=merge-duplicates' },
     })
-
     if (!updateRes.ok) {
       const json = await updateRes.json()
       $(`Failed to update fleets. Res=%o`, json)
