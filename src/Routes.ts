@@ -6,12 +6,16 @@ import * as PlanetCtrl from './controllers/PlanetCtrl'
 import * as StarCtrl from './controllers/StarCtrl'
 import { stampLog } from './Log'
 import { Ctx } from './Server'
+import { template as intro } from './templates/intro'
 
 const log = stampLog(`Router`)
 
 const bind =
   (router: Router, prefix: string) => {
-    router.get(prefix, readIntro)
+    router.get(prefix, ctx => {
+      ctx.type = 'html'
+      ctx.body = intro
+    })
 
     router.get(`${prefix}/clusters.html`, ClusterCtrl.readClusters)
     router.get(`${prefix}/clusters/:index.html`, ClusterCtrl.readCluster)
@@ -26,14 +30,6 @@ const bind =
     router.post(`${prefix}/fleets/new.json`, koaBody(), FleetCtrl.createFleet)
     router.get(`${prefix}/fleets/:id.html`, FleetCtrl.readFleet)
     router.put(`${prefix}/fleets/:id.json`, koaBody(), FleetCtrl.updateFleet)
-  }
-
-const readIntro =
-  async (ctx: Ctx): Promise<void> => {
-    const $ = log(`readIntro`)
-    const template = require('./templates/Intro.marko')
-    ctx.type = 'html'
-    ctx.body = template.stream()
   }
 
 export default bind
