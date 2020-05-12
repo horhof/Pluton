@@ -4,6 +4,7 @@ import { stampLog } from '../Log'
 import { Star } from '../models/Star'
 import { Ctx, showErr } from '../Server'
 import { render as renderUniverse } from '../templates/universe'
+import { conn } from '../db/conn'
 
 const log = stampLog(`Http:Cluster`)
 
@@ -12,16 +13,20 @@ export const readClusters =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`readClusters`)
 
-    const res = await query({ noun: `clusters` })
-    if (!res.ok) {
-      return showErr(ctx, `Can't find clusters`, $, res.status)
+    const res = await conn.selectRows(`
+        SELECT DISTINCT
+          cluster
+        FROM stars
+        ORDER BY
+          cluster ASC
+      `, [], v => v.cluster as number)
+    if (res instanceof Error) {
+      return showErr(ctx, `Can't find clusters`, $, 500)
     }
-
-    const clusters = await res.json() as { cluster: number }[]
-    const input = map(clusters, 'cluster')
+    const clusters = res
 
     ctx.type = 'html'
-    ctx.body = renderUniverse(input)
+    ctx.body = renderUniverse(clusters)
   }
 
 /** GET /clusters/:index */
