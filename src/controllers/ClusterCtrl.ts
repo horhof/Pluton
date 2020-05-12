@@ -3,6 +3,7 @@ import { query } from '../Database'
 import { stampLog } from '../Log'
 import { Star } from '../models/Star'
 import { Ctx, showErr } from '../Server'
+import { render as renderUniverse } from '../templates/universe'
 
 const log = stampLog(`Http:Cluster`)
 
@@ -19,9 +20,8 @@ export const readClusters =
     const clusters = await res.json() as { cluster: number }[]
     const input = map(clusters, 'cluster')
 
-    const template = require('../templates/Universe.marko')
     ctx.type = 'html'
-    ctx.body = template.stream(input)
+    ctx.body = renderUniverse(input)
   }
 
 /** GET /clusters/:index */

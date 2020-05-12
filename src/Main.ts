@@ -18,7 +18,7 @@ const main =
     const prefix = get(process.env, 'BASE_URL', '')
     const port = get(process.env, 'PORT', 3000)
     const server = await createServer(prefix)
-    await server.listen(port)
+    server.listen(port)
     $(`HTTP server listening at http://localhost:${port}${prefix ? `/${prefix}` : ''}`)
 
     const ticker = new Ticker
