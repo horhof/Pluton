@@ -4,8 +4,9 @@ import { Star } from '../models/Star'
 import { Ctx, showErr } from '../Server'
 import { isLeft } from '../types/Either'
 import { getProperty } from './validation'
+import { render as renderStar } from '../templates/star'
 
-const log = stampLog(`Http:Star`)
+const log = stampLog(`http:star`)
 
 /** GET /stars/<ID>.html */
 export const readStar =
@@ -22,8 +23,7 @@ export const readStar =
       return showErr(ctx, res.message, $, 404)
     }
     const star = res
-    $(`Done. Rendering template... Star=%o`, star)
-    const template = require('../templates/Star.marko')
+
     ctx.type = 'html'
-    ctx.body = template.stream(star)
+    ctx.body = renderStar(star, star.planets!)
   }
