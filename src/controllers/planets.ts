@@ -1,13 +1,13 @@
-import { assign, get } from 'lodash'
-import { getCreatedId, getInstance, getNextIndex, query } from '../database'
+import { get } from 'lodash'
+import { query } from '../database'
 import { stampLog } from '../log'
-import { Planet, createPlanet } from '../models/planet'
-import { Star } from '../models/star'
+import { getFleetsByPlanet } from '../models/fleet'
+import { createPlanet, getPlanet } from '../models/planet'
+import { getStarByPlanet, Star } from '../models/star'
 import { Ctx, showErr } from '../server'
-import { isLeft } from '../types/either'
-import { getProperty } from './validation'
 import { render as renderNewPlanet } from '../templates/newPlanet'
 import { render as renderPlanet } from '../templates/planet'
+import { getProperty } from './validation'
 
 const log = stampLog(`Http:Planet`)
 
@@ -15,20 +15,42 @@ const log = stampLog(`Http:Planet`)
 export const planetsId =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`readPlanet`)
+
     $(`Parsing parameters...`)
     const id = getProperty<number>(ctx.params, 'id', Number, isFinite)
     if (!id) {
       return showErr(ctx, `"${id}" is not a valid ID.`, $, 400)
     }
+
     $(`Done. Fetching planet %o...`, id)
-    const res = await getInstance<Planet>({ noun: `planets?id=eq.${id}&select=*,star:stars(*),fleets(*)&fleets.order=index.asc` })
-    if (isLeft(res)) {
-      return showErr(ctx, res.message, $, 404)
+    const planetRes = await getPlanet(id)
+    if (planetRes instanceof Error) {
+      return showErr(ctx, planetRes.message, $, 500)
     }
-    const planet = res
+    if (planetRes === undefined) {
+      return showErr(ctx, `No such planet ${id}`, $, 404)
+    }
+    const planet = planetRes
+
+    $(`Done. Fetching star for planet %o...`, id)
+    const starRes = await getStarByPlanet(id)
+    if (starRes instanceof Error) {
+      return showErr(ctx, starRes.message, $, 500)
+    }
+    if (starRes === undefined) {
+      return showErr(ctx, `Planet ${id} has no star`, $, 500)
+    }
+    const star = starRes
+
+    $(`Done. Fetching fleets for planet %o...`, id)
+    const fleetsRes = await getFleetsByPlanet(id)
+    if (fleetsRes instanceof Error) {
+      return showErr(ctx, fleetsRes.message, $, 500)
+    }
+    const fleets = fleetsRes
+
     ctx.type = 'html'
-    // @ts-ignore
-    ctx.body = renderPlanet(planet, planet.star!, planet.fleets!)
+    ctx.body = renderPlanet(planet, star, fleets)
   }
 
 /** GET /planets/new.html */

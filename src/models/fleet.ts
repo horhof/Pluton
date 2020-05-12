@@ -17,33 +17,55 @@ export enum FleetState {
 }
 
 export interface Fleet {
-  id: ID
+  id: number
+  /** The order of the fleet within its planet, e.g. 13. */
+  index: number
   /** E.g. "Space Legion XIII". */
   name: string
-  /** The order of the fleet within its planet, e.g. 13. */
-  index: ID
   /** Whether this fleet is an immovable base bound to the planet or mobile. */
   is_base: boolean
-  ships: N
+  ships: number
   /** Whether this fleet is attacking its target or defending it. */
   is_attacking: boolean
-  /** The ID of the owning planet. */
-  planet_id: ID
-  planet: Planet
-  /** The ID of the planet this fleet is en route to. */
-  target_id: ID | null
-  target: Planet
   /** How many ticks in the total trip from home to destination. */
-  warp_time: N
+  warp_time: number
   /**
    * How many ticks away from home.
    *
    * This starts at 0 and increments up to warp_time. When returning back home,
    * it decrements back to 0.
    */
-  from_home: N
+  from_home: number
   state: FleetState
+  // Foreign keys.
+  /** The ID of the owning planet. */
+  planet_id: number
+  /** The ID of the planet this fleet is en route to. */
+  target_id: number | undefined
+  // Joins.
+  planet?: Planet
+  target?: Planet
 }
+
+export const getFleetsByPlanet =
+  async (planetId: number): Promise<Fleet[] | Error> => {
+    const $ = log(`getFleetsByPlanet`)
+
+    const res = await db.get<Fleet>(`
+        SELECT *
+        FROM fleets
+        WHERE TRUE
+          AND planet_id = $1
+      `,
+      [planetId],
+      convert)
+    if (res instanceof Error) {
+      return res
+    }
+    const fleets = res
+
+    return fleets || []
+  }
 
 export const createFleet =
   async (planetId: number, name: string): Promise<number | Error> => {
@@ -69,4 +91,21 @@ export const createFleet =
     $(`Done. Fleet %o created.`, fleetId)
 
     return fleetId
+  }
+
+const convert =
+  (a: any): Fleet => {
+    return {
+      id: a.id as number,
+      index: a.index as number,
+      name: a.name as string,
+      is_base: a.is_base as boolean,
+      ships: a.ships as number,
+      is_attacking: a.is_attacking as boolean,
+      warp_time: a.warp_time as number,
+      from_home: a.from_home as number,
+      state: a.state as FleetState,
+      planet_id: a.planet_id as number,
+      target_id: a.target_id !== null ? a.target_id as number : undefined,
+    }
   }

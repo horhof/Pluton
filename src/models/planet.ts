@@ -8,15 +8,41 @@ const log = stampLog(`model:planet`)
 
 export interface Planet {
   id: number
-  index: ID
+  index: number
   name: string
   ruler: string
   // Parent.
-  star_id: ID
+  star_id: number
   star?: Star
   // Children.
   fleets?: Fleet
 }
+
+export const getPlanet =
+  async (id: number): Promise<Planet | undefined | Error> => {
+    const $ = log(`getPlanet`)
+
+    const res = await db.get<Planet | undefined>(`
+        SELECT *
+        FROM planets
+        WHERE TRUE
+          AND id = $1
+      `,
+      [id],
+      a => ({
+        id: a.id as number,
+        index: a.index as number,
+        name: a.name as string,
+        ruler: a.ruler as string,
+        star_id: a.star_id as number,
+      }))
+    if (res instanceof Error) {
+      return res
+    }
+    const [planet] = res
+
+    return planet
+  }
 
 export const createPlanet =
   async (star_id: number, name: string, ruler: string): Promise<number | Error> => {
