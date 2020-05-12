@@ -1,10 +1,5 @@
 /doc
-/.vscode
-/.cache
-/.nyc_output
 /node_modules
+/.vscode
 /build
 /package-lock.json
-/postgrest.cfg
-/src/static
-/src/**/*.marko.js
