@@ -6,6 +6,7 @@ import { Planet } from '../models/Planet'
 import { Ctx, sendErr, showErr } from '../Server'
 import { isLeft } from '../types/Either'
 import { getProperty } from './validation'
+import { render as renderFleet } from '../templates/fleet'
 
 const log = stampLog(`Http:Fleet`)
 
@@ -24,9 +25,9 @@ export const readFleet =
       return showErr(ctx, res.message, $, 404)
     }
     const fleet = res
-    const template = require('../templates/Fleet.marko')
+
     ctx.type = 'html'
-    ctx.body = template.stream(fleet)
+    ctx.body = renderFleet(fleet, fleet.planet, fleet.target)
   }
 
 /** PUT /fleets/<ID>.json */
