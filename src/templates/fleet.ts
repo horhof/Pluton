@@ -4,7 +4,7 @@ import { Planet } from '../models/Planet'
 import { Star } from '../models/Star'
 import { Fleet, FleetState } from '../models/Fleet'
 
-const log = stampLog(`html:flee`)
+const log = stampLog(`html:fleet`)
 
 export const render =
   (fleet: Fleet, planet: Planet, target: Planet | null): string => {

@@ -13,6 +13,7 @@ import { get } from 'lodash'
 import { Logger, stampLog } from './Log'
 import bind from './Routes'
 require('marko/node-require')
+import { render as renderError } from './templates/error'
 
 const log = stampLog(`Http`)
 
@@ -58,10 +59,9 @@ export const createServer =
 export const showErr =
   (ctx: Ctx, msg: string, logger: Logger, code = 500): void => {
     logger(msg)
-    const template = require('./templates/Error.marko')
     ctx.status = code
     ctx.type = 'html'
-    ctx.body = template.stream({ code, msg })
+    ctx.body = renderError(code, msg)
   }
 
 /** Log and send a JSON response with the given message and HTTP response code. */
