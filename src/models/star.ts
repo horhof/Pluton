@@ -14,6 +14,25 @@ export interface Star {
   planets?: Planet[]
 }
 
+export const getStar =
+  async (id: number): Promise<Star | undefined | Error> => {
+    const $ = log(`getStar`)
+
+    const res = await db.get<Star | null>(`
+        SELECT *
+        FROM stars
+        WHERE id = $1
+      `,
+      [id],
+      cast)
+    if (res instanceof Error) {
+      return res
+    }
+    const [star] = res
+
+    return star || undefined
+  }
+
 export const getStarByPlanet =
   async (planetId: number): Promise<Star | undefined | Error> => {
     const $ = log(`getStarByPlanet`)
@@ -28,7 +47,7 @@ export const getStarByPlanet =
           AND p.id = $1
       `,
       [planetId],
-      convert)
+      cast)
     if (res instanceof Error) {
       return res
     }
@@ -37,7 +56,7 @@ export const getStarByPlanet =
     return star || undefined
   }
 
-const convert =
+const cast =
   (a: any): Star => {
     return {
       id: a.id as number,

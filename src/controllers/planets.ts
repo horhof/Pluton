@@ -3,7 +3,7 @@ import { query } from '../database'
 import { stampLog } from '../log'
 import { getFleetsByPlanet } from '../models/fleet'
 import { createPlanet, getPlanet } from '../models/planet'
-import { getStarByPlanet, Star } from '../models/star'
+import { getStarByPlanet, Star, getStar } from '../models/star'
 import { Ctx, showErr } from '../server'
 import { render as renderNewPlanet } from '../templates/newPlanet'
 import { render as renderPlanet } from '../templates/planet'
@@ -56,8 +56,7 @@ export const planetsId =
 /** GET /planets/new.html */
 export const planetsNew =
   async (ctx: Ctx): Promise<void> => {
-    const $ = log(`createPlanetForm`)
-    $()
+    const $ = log(`planetsNew`)
 
     const qs = ctx.request.query || {}
     const { star_id } = qs
@@ -65,11 +64,14 @@ export const planetsNew =
       return showErr(ctx, `Need a star to create this planet under.`, $, 400)
     }
 
-    const res = await query({ noun: `stars?id=eq.${star_id}` })
-    if (!res.ok) {
-      return showErr(ctx, `Can't find star "${star_id}".`, $, 404)
+    const res = await getStar(star_id)
+    if (res instanceof Error) {
+      return showErr(ctx, `Failed to get star ${star_id}".`, $, 500)
     }
-    const [star] = await res.json() as Star[]
+    const star = res
+    if (!star) {
+      return showErr(ctx, `No such star ${star_id}".`, $, 404)
+    }
 
     ctx.type = 'html'
     $(`Rendering form... StarId=%o Star=%o`, star_id, star)
@@ -79,7 +81,7 @@ export const planetsNew =
 /** GET /planets/create.html, { star_id, name, ruler } */
 export const planetsCreate =
   async (ctx: Ctx): Promise<void> => {
-    const $ = log(`createPlanet`)
+    const $ = log(`planetsCreate`)
 
     $(`Processing parameters...`)
     const args = ctx.request.query
