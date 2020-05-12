@@ -3,10 +3,11 @@ import { getCreatedId, getInstance, getNextIndex, query } from '../Database'
 import { stampLog } from '../Log'
 import { Fleet, FleetState } from '../models/Fleet'
 import { Planet } from '../models/Planet'
-import { Ctx, sendErr, showErr } from '../Server'
+import { Ctx, showErr } from '../Server'
 import { isLeft } from '../types/Either'
 import { getProperty } from './validation'
 import { render as renderFleet } from '../templates/fleet'
+import { render as renderNewFleet } from '../templates/newFleet'
 
 const log = stampLog(`Http:Fleet`)
 
@@ -41,7 +42,7 @@ export const updateFleet =
     $(`Noun=%o Body=%o`, noun, body)
     if (body.target_id) {
       if (body.from_home > 0) {
-        return sendErr(ctx, `Fleet ${id} can't be given a target. It's ${body.from_home} ticks from home.`, $, 400)
+        return showErr(ctx, `Fleet ${id} can't be given a target. It's ${body.from_home} ticks from home.`, $, 400)
       }
       $(`Fleet %o has a target: planet %o.`, id, body.target_id)
       body.warp_time = 6
@@ -59,7 +60,7 @@ export const updateFleet =
       $(`Response was not OK.`)
       const body = await res.json()
       $(`Err=%o`, body)
-      return sendErr(ctx, body.message, $, res.status)
+      return showErr(ctx, body.message, $, res.status)
     }
     $(`Success. Redirecting back to fleet %o.`, id)
     ctx.body = { url: `${id}.html` }
@@ -82,13 +83,12 @@ export const createFleetForm =
     }
     const [planet] = await res.json() as Planet[]
 
-    const template = require('../templates/NewFleet.marko')
     ctx.type = 'html'
-    ctx.body = template.stream({ planet })
+    ctx.body = renderNewFleet(planet)
   }
 
 /** POST /fleets/new.json */
-export const createFleet =
+export const createFleet2 =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`createFleet`)
     $()
@@ -108,13 +108,44 @@ export const createFleet =
     const res2 = await query({ verb: 'post', noun: 'fleets', body: fleet })
 
     if (!res2.ok) {
-      return sendErr(ctx, `Failed to create fleet "${JSON.stringify(fleet)}".`, $, res2.status)
+      return showErr(ctx, `Failed to create fleet "${JSON.stringify(fleet)}".`, $, res2.status)
     }
 
     const id = getCreatedId(res2.headers)
     if (!id) {
-      return sendErr(ctx, `Failed to get created fleet.`, $, 500)
+      return showErr(ctx, `Failed to get created fleet.`, $, 500)
     }
 
     ctx.body = { url: `${id}.html` }
+  }
+
+/** POST /fleets/create.html, { planet_id, name } */
+export const createFleet =
+  async (ctx: Ctx): Promise<void> => {
+    const $ = log(`createFleet`)
+    $()
+
+    const args = ctx.request.query
+    const name = get(args, 'name')
+    const planet_id = get(args, 'planet_id')
+
+    const fleet = { name, planet_id }
+
+    $(`Looking up fleet numbers for planet %o ...`, planet_id)
+    const index = await getNextIndex('planets', planet_id, 'fleets')
+    assign(fleet, { index })
+
+    $(`Creating fleet no. %o under planet %o...`, index, planet_id)
+    const res2 = await query({ verb: 'post', noun: 'fleets', body: fleet })
+
+    if (!res2.ok) {
+      return showErr(ctx, `Failed to create fleet "${JSON.stringify(fleet)}".`, $, res2.status)
+    }
+
+    const id = getCreatedId(res2.headers)
+    if (!id) {
+      return showErr(ctx, `Failed to get created fleet.`, $, 500)
+    }
+
+    ctx.redirect(`${id}.html`)
   }

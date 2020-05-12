@@ -1,7 +1,7 @@
 import { Pool, QueryResult } from 'pg'
 import { stampLog } from '../Log'
 
-const log = stampLog(`Db`)
+const log = stampLog(`db`)
 
 export class Client {
   constructor(private pool: Pool) {}
@@ -21,7 +21,7 @@ export class Client {
     const res = await this.query<T>(text, values)
     if (res instanceof Error) {
       $(`Error: query failed: %o`, res.message)
-      return []
+      return res
     }
 
     if (!res || !res.rows || res.rows.length < 1) {

@@ -32,5 +32,6 @@ export const render =
           const ruler = getValue('ruler')
           createLink.href = makeUrl('create.html', { star_id: ${starId}, name, ruler })
         }
+        update()
       </script>
     `)

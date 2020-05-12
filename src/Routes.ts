@@ -22,13 +22,12 @@ const bind =
 
     router.get(`${prefix}/stars/:id.html`, StarCtrl.readStar)
 
-    router.get(`${prefix}/planets/new.html`, PlanetCtrl.createPlanetForm)
-    router.post(`${prefix}/planets/new.json`, koaBody(), PlanetCtrl.createPlanet)
-    router.get(`${prefix}/planets/create.html`, PlanetCtrl.createPlanet2)
-    router.get(`${prefix}/planets/:id.html`, PlanetCtrl.readPlanet)
+    router.get(`${prefix}/planets/new.html`, PlanetCtrl.planetsNew)
+    router.get(`${prefix}/planets/create.html`, PlanetCtrl.planetsCreate)
+    router.get(`${prefix}/planets/:id.html`, PlanetCtrl.planetsId)
 
     router.get(`${prefix}/fleets/new.html`, FleetCtrl.createFleetForm)
-    router.post(`${prefix}/fleets/new.json`, koaBody(), FleetCtrl.createFleet)
+    router.get(`${prefix}/fleets/create.html`, FleetCtrl.createFleet)
     router.get(`${prefix}/fleets/:id.html`, FleetCtrl.readFleet)
     router.put(`${prefix}/fleets/:id.json`, koaBody(), FleetCtrl.updateFleet)
   }
