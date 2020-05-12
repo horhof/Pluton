@@ -1,7 +1,7 @@
-import { stampLog } from '../Log'
-import { ID } from '../types/Number'
-import { Fleet } from './Fleet'
-import { Star } from './Star'
+import { stampLog } from '../log'
+import { ID } from '../types/number'
+import { Fleet } from './fleet'
+import { Star } from './star'
 import { db } from '../db/conn'
 
 const log = stampLog(`model:planet`)

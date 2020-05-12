@@ -1,10 +1,10 @@
 // This module spins up the HTTP server and other game components.
 
 import { get } from 'lodash'
-import { stampLog } from './Log'
-import { createServer } from './Server'
-import { Ticker } from './Ticker'
-import * as Database from './Database'
+import { stampLog } from './log'
+import { createServer } from './server'
+import { Ticker } from './ticker'
+import * as Database from './database'
 
 const log = stampLog(`Main`)
 const $ = log()

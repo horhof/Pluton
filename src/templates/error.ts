@@ -1,5 +1,5 @@
 import { template as page } from './page'
-import { stampLog } from '../Log'
+import { stampLog } from '../log'
 
 const log = stampLog(`html:error`)
 

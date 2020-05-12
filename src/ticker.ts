@@ -1,9 +1,9 @@
 // This module defines the Ticker class which moves the game along.
 
 import { forEach } from 'lodash'
-import { query } from './Database'
-import { stampLog } from './Log'
-import { Fleet, FleetState } from './models/Fleet'
+import { query } from './database'
+import { stampLog } from './log'
+import { Fleet, FleetState } from './models/fleet'
 import { db } from './db/conn'
 
 const log = stampLog(`Ticker`)

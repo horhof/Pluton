@@ -10,10 +10,13 @@ import mount from 'koa-mount'
 import Router from 'koa-router'
 import serve from 'koa-static'
 import { get } from 'lodash'
-import { Logger, stampLog } from './Log'
-import bind from './Routes'
-require('marko/node-require')
+import { Logger, stampLog } from './log'
 import { render as renderError } from './templates/error'
+import { template as intro } from './templates/intro'
+import * as ClusterCtrl from './controllers/clusters'
+import * as FleetCtrl from './controllers/fleets'
+import * as PlanetCtrl from './controllers/planets'
+import * as StarCtrl from './controllers/stars'
 
 const log = stampLog(`Http`)
 
@@ -42,7 +45,7 @@ export const createServer =
     })
 
     app.use(mount(`${prefix}/static`, serve(staticDir)))
-    bind(router, prefix)
+    bindRoutes(router, prefix)
     app.use(router.routes())
 
     app.use(async ctx => {
@@ -54,6 +57,29 @@ export const createServer =
 
     return app
   }
+
+const bindRoutes =
+  (router: Router, prefix: string) => {
+    router.get(prefix, ctx => {
+      ctx.type = 'html'
+      ctx.body = intro
+    })
+
+    router.get(`${prefix}/clusters.html`, ClusterCtrl.readClusters)
+    router.get(`${prefix}/clusters/:index.html`, ClusterCtrl.readCluster)
+
+    router.get(`${prefix}/stars/:id.html`, StarCtrl.readStar)
+
+    router.get(`${prefix}/planets/new.html`, PlanetCtrl.planetsNew)
+    router.get(`${prefix}/planets/create.html`, PlanetCtrl.planetsCreate)
+    router.get(`${prefix}/planets/:id.html`, PlanetCtrl.planetsId)
+
+    router.get(`${prefix}/fleets/new.html`, FleetCtrl.createFleetForm)
+    router.get(`${prefix}/fleets/create.html`, FleetCtrl.fleetsCreate)
+    router.get(`${prefix}/fleets/:id.html`, FleetCtrl.readFleet)
+    // router.put(`${prefix}/fleets/:id.json`, koaBody(), FleetCtrl.updateFleet)
+  }
+
 
 /** Log and show an error page with the given message and HTTP response code. */
 export const showErr =

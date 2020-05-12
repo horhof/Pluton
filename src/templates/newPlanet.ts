@@ -1,4 +1,4 @@
-import { Star } from '../models/Star'
+import { Star } from '../models/star'
 import { template as page } from './page'
 
 export const render =

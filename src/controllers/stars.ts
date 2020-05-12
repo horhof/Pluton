@@ -1,8 +1,8 @@
-import { getInstance } from '../Database'
-import { stampLog } from '../Log'
-import { Star } from '../models/Star'
-import { Ctx, showErr } from '../Server'
-import { isLeft } from '../types/Either'
+import { getInstance } from '../database'
+import { stampLog } from '../log'
+import { Star } from '../models/star'
+import { Ctx, showErr } from '../server'
+import { isLeft } from '../types/either'
 import { getProperty } from './validation'
 import { render as renderStar } from '../templates/star'
 

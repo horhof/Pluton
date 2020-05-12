@@ -1,6 +1,6 @@
 import { template as page } from './page'
-import { stampLog } from '../Log'
-import { Star } from '../models/Star'
+import { stampLog } from '../log'
+import { Star } from '../models/star'
 
 const log = stampLog(`html:cluster`)
 

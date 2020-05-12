@@ -1,8 +1,8 @@
 import { template as page } from './page'
-import { stampLog } from '../Log'
-import { Planet } from '../models/Planet'
-import { Star } from '../models/Star'
-import { Fleet } from '../models/Fleet'
+import { stampLog } from '../log'
+import { Planet } from '../models/planet'
+import { Star } from '../models/star'
+import { Fleet } from '../models/fleet'
 
 const log = stampLog(`html:planet`)
 

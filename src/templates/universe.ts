@@ -1,5 +1,5 @@
 import { template as page } from './page'
-import { stampLog } from '../Log'
+import { stampLog } from '../log'
 import { join } from 'path'
 
 const log = stampLog(`html:universe`)

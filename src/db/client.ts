@@ -1,5 +1,5 @@
 import { Pool, QueryResult } from 'pg'
-import { stampLog } from '../Log'
+import { stampLog } from '../log'
 
 const log = stampLog(`db`)
 

@@ -1,5 +1,5 @@
 import { template as page } from './page'
-import { Planet } from '../models/Planet'
+import { Planet } from '../models/planet'
 
 export const render =
   (planet: Planet): string => page

@@ -1,5 +1,5 @@
-import { N } from '../types/Number'
-import { Planet } from './Planet'
+import { N } from '../types/number'
+import { Planet } from './planet'
 
 export interface Star {
   id: number

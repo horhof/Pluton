@@ -1,7 +1,7 @@
 import { assign, defaults, get } from 'lodash'
 import Fetch from 'node-fetch'
-import { stampLog } from './Log'
-import { AsyncEither, left, Maybe } from './types/Either'
+import { stampLog } from './log'
+import { AsyncEither, left, Maybe } from './types/either'
 import { spawn } from 'child_process'
 import * as fs from 'fs'
 

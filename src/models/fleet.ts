@@ -1,6 +1,6 @@
-import { stampLog } from '../Log'
-import { ID, N } from '../types/Number'
-import { Planet } from './Planet'
+import { stampLog } from '../log'
+import { ID, N } from '../types/number'
+import { Planet } from './planet'
 import { db } from '../db/conn'
 
 const log = stampLog(`model:fleet`)
