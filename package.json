@@ -35,8 +35,6 @@
   },
   "scripts": {
     "compile": "tsc",
-    "start": "ts-node src/Main",
-    "watch": "nodemon -e ts,marko,css --watch src -- src/Main",
-    "watchtest": "mocha src --watch --watch-extensions ts"
+    "start": "ts-node src/main"
   }
 }

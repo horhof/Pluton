@@ -37,6 +37,7 @@ export const updateFleet =
     const $ = log(`updateFleet`)
     const id = getProperty<number>(ctx.params, 'id', Number, isFinite)
     const noun = `fleets?id=eq.${id}`
+    // @ts-ignore
     const body = ctx.request.body
     assign(body, { id })
     $(`Noun=%o Body=%o`, noun, body)

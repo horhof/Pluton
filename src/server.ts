@@ -31,29 +31,9 @@ export const createServer =
     const app = new Koa()
     let router = new Router()
 
-    const staticDir = `${__dirname}/static`
-    const isProduction = process.env['NODE_ENV'] === 'production'
-    require('lasso').configure({
-      plugins: [
-        'lasso-marko' // Allow Marko templates to be compiled and transported to the browser
-      ],
-      urlPrefix: `${prefix}/static`,
-      outputDir: staticDir, // Place all generated JS/CSS/etc. files into the "static" dir
-      bundlingEnabled: isProduction, // Only enable bundling in production
-      minify: isProduction, // Only minify JS and CSS code in production
-      fingerprintsEnabled: isProduction, // Only add fingerprints to URLs in production
-    })
-
-    app.use(mount(`${prefix}/static`, serve(staticDir)))
+    app.use(mount(`${prefix}/images`, serve(`images`)))
     bindRoutes(router, prefix)
     app.use(router.routes())
-
-    app.use(async ctx => {
-      // We don't have a favicon.
-      if (get(ctx.req, 'url', '').match(/favicon\.ico$/)) return
-
-      $(`No route was matched for this request. Ctx=%O`, ctx)
-    })
 
     return app
   }

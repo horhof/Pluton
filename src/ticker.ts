@@ -32,13 +32,13 @@ export class Ticker {
     $(`Starting tick %o...`, this.tick)
 
     $(`Updating bases with new ships...`)
-    await this.allocateShips()
+    // await this.allocateShips()
 
     $(`Moving fleets...`)
-    await this.move()
+    // await this.move()
 
     $(`Executing combat...`)
-    await this.fight()
+    // await this.fight()
 
     $(`Done.`)
   }
