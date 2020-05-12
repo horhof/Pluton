@@ -4,6 +4,7 @@ import { stampLog } from '../Log'
 import { Star } from '../models/Star'
 import { Ctx, showErr } from '../Server'
 import { render as renderUniverse } from '../templates/universe'
+import { render as renderCluster } from '../templates/cluster'
 import { conn } from '../db/conn'
 
 const log = stampLog(`Http:Cluster`)
@@ -19,9 +20,11 @@ export const readClusters =
         FROM stars
         ORDER BY
           cluster ASC
-      `, [], v => v.cluster as number)
+      `,
+      [],
+      r => r.cluster as number)
     if (res instanceof Error) {
-      return showErr(ctx, `Can't find clusters`, $, 500)
+      return showErr(ctx, `Can't get clusters`, $, 500)
     }
     const clusters = res
 
@@ -29,7 +32,7 @@ export const readClusters =
     ctx.body = renderUniverse(clusters)
   }
 
-/** GET /clusters/:index */
+/** GET /clusters/<ID>.html */
 export const readCluster =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`readCluster`)
@@ -41,16 +44,27 @@ export const readCluster =
     }
 
     $(`Querying for all stars with a cluster of %o...`, index)
-    const res = await query({ noun: `stars?select=*&cluster=eq.${index}` })
-
-    if (!res.ok) {
+    const res = await conn.selectRows(`
+        SELECT
+          id
+        , name
+        FROM stars
+        WHERE TRUE
+          AND cluster = $1
+        ORDER BY
+          cluster ASC
+        , index ASC
+      `,
+      [index],
+      r => ({
+        id: r.id as number,
+        name: r.name as string,
+      }))
+    if (res instanceof Error) {
       return showErr(ctx, `Can't find cluster "${index}".`, $, 404)
     }
+    const stars = res
 
-    const stars = await res.json() as Star[]
-
-    const input = { index, stars }
-    const template = require('../templates/Cluster.marko')
     ctx.type = 'html'
-    ctx.body = template.stream(input)
+    ctx.body = renderCluster(index, stars)
   }

@@ -4,7 +4,7 @@ export type Logger = (format?: string, ...opts: any[]) => void
 
 type GetLogger = (nameOverride?: string) => Logger
 
-const STAMP = `Pluton`
+const STAMP = `pluton`
 
 const LOG_START = `*`
 
