@@ -1,5 +1,9 @@
+import { stampLog } from '../Log'
 import { ID, N } from '../types/Number'
 import { Planet } from './Planet'
+import { db } from '../db/conn'
+
+const log = stampLog(`model:fleet`)
 
 export enum FleetState {
   /** Sitting idle at its home planet. Can WARP. */
@@ -40,3 +44,29 @@ export interface Fleet {
   from_home: N
   state: FleetState
 }
+
+export const createFleet =
+  async (planetId: number, name: string): Promise<number | Error> => {
+    const $ = log(`createPlanet`)
+
+    const res = await db.get<number>(`
+        INSERT INTO fleets
+          (planet_id, index, name)
+        VALUES
+          (
+            $1
+          , (SELECT coalesce(max(index)) FROM fleets WHERE planet_id = $1) + 1
+          , $2
+          )
+        RETURNING id
+      `,
+      [planetId, name],
+      a => a.id as number)
+    if (res instanceof Error) {
+      return res
+    }
+    const [fleetId] = res
+    $(`Done. Fleet %o created.`, fleetId)
+
+    return fleetId
+  }

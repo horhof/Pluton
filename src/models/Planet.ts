@@ -28,7 +28,7 @@ export const createPlanet =
         VALUES
           (
             $1
-          , (SELECT coalesce(max(index)) FROM planets) + 1
+          , (SELECT coalesce(max(index)) FROM planets WHERE star_id = $1) + 1
           , $2
           , $3
           )

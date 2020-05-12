@@ -1,7 +1,7 @@
 import { assign, chain, get } from 'lodash'
 import { getCreatedId, getInstance, getNextIndex, query } from '../Database'
 import { stampLog } from '../Log'
-import { Fleet, FleetState } from '../models/Fleet'
+import { Fleet, FleetState, createFleet } from '../models/Fleet'
 import { Planet } from '../models/Planet'
 import { Ctx, showErr } from '../Server'
 import { isLeft } from '../types/Either'
@@ -87,40 +87,8 @@ export const createFleetForm =
     ctx.body = renderNewFleet(planet)
   }
 
-/** POST /fleets/new.json */
-export const createFleet2 =
-  async (ctx: Ctx): Promise<void> => {
-    const $ = log(`createFleet`)
-    $()
-
-    const args = ctx.request.body
-
-    const name = get(args, 'name')
-    const planet_id = get(args, 'planet_id')
-
-    const fleet = { name, planet_id }
-
-    $(`Looking up fleet numbers for planet %o ...`, planet_id)
-    const index = await getNextIndex('planets', planet_id, 'fleets')
-    assign(fleet, { index })
-
-    $(`Creating fleet no. %o under planet %o...`, index, planet_id)
-    const res2 = await query({ verb: 'post', noun: 'fleets', body: fleet })
-
-    if (!res2.ok) {
-      return showErr(ctx, `Failed to create fleet "${JSON.stringify(fleet)}".`, $, res2.status)
-    }
-
-    const id = getCreatedId(res2.headers)
-    if (!id) {
-      return showErr(ctx, `Failed to get created fleet.`, $, 500)
-    }
-
-    ctx.body = { url: `${id}.html` }
-  }
-
 /** POST /fleets/create.html, { planet_id, name } */
-export const createFleet =
+export const fleetsCreate =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`createFleet`)
     $()
@@ -131,21 +99,11 @@ export const createFleet =
 
     const fleet = { name, planet_id }
 
-    $(`Looking up fleet numbers for planet %o ...`, planet_id)
-    const index = await getNextIndex('planets', planet_id, 'fleets')
-    assign(fleet, { index })
-
-    $(`Creating fleet no. %o under planet %o...`, index, planet_id)
-    const res2 = await query({ verb: 'post', noun: 'fleets', body: fleet })
-
-    if (!res2.ok) {
-      return showErr(ctx, `Failed to create fleet "${JSON.stringify(fleet)}".`, $, res2.status)
+    const res = await createFleet(planet_id, name)
+    if (res instanceof Error) {
+      return showErr(ctx, `Failed to create fleet: ${res.message}`, $, 500)
     }
-
-    const id = getCreatedId(res2.headers)
-    if (!id) {
-      return showErr(ctx, `Failed to get created fleet.`, $, 500)
-    }
+    const id = res
 
     ctx.redirect(`${id}.html`)
   }

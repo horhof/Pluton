@@ -11,19 +11,21 @@ export const render =
     const $ = log(`render`)
     let fleetStr = ''
     if (fleets.length > 0) {
-      const fleetRows = fleets.map(f => `
-        <tr>
-          <td class="center">${f.index}</td>
-          <td>
-            <a href="../fleets/${f.id}.html">${f.name}</a>
-          </td>
-          <td class="id right">${f.ships}</td>
-          <td class="center">
-          ${f.is_attacking
-            ? '<span class="attacking">Attack</span>'
-            : '<span class="defending">Defend</span>'}
-          </td>
-        </tr>`)
+      const fleetRows = fleets
+        .map(f => `
+          <tr>
+            <td class="center">${f.index}</td>
+            <td>
+              <a href="../fleets/${f.id}.html">${f.name}</a>
+            </td>
+            <td class="id right">${f.ships}</td>
+            <td class="center">
+            ${f.is_attacking
+              ? '<span class="attacking">Attack</span>'
+              : '<span class="defending">Defend</span>'}
+            </td>
+          </tr>`)
+        .join('')
     fleetStr = `
       <table>
         <thead>

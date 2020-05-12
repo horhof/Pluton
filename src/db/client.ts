@@ -16,7 +16,7 @@ export class Client {
   }
 
   async get<T>(text: string, values: any[], convert: (v: any) => T): Promise<T[] | Error> {
-    const $ = log(`getRows`)
+    const $ = log(`get`)
 
     const res = await this.query<T>(text, values)
     if (res instanceof Error) {
