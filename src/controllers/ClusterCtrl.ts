@@ -5,7 +5,7 @@ import { Star } from '../models/Star'
 import { Ctx, showErr } from '../Server'
 import { render as renderUniverse } from '../templates/universe'
 import { render as renderCluster } from '../templates/cluster'
-import { conn } from '../db/conn'
+import { db } from '../db/conn'
 
 const log = stampLog(`Http:Cluster`)
 
@@ -14,7 +14,7 @@ export const readClusters =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`readClusters`)
 
-    const res = await conn.selectRows(`
+    const res = await db.get(`
         SELECT DISTINCT
           cluster
         FROM stars
@@ -44,7 +44,7 @@ export const readCluster =
     }
 
     $(`Querying for all stars with a cluster of %o...`, index)
-    const res = await conn.selectRows(`
+    const res = await db.get(`
         SELECT
           id
         , name

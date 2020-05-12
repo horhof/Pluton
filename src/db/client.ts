@@ -15,7 +15,7 @@ export class Client {
     return res
   }
 
-  async selectRows<T>(text: string, values: any[], convert: (v: any) => T): Promise<T[] | Error> {
+  async get<T>(text: string, values: any[], convert: (v: any) => T): Promise<T[] | Error> {
     const $ = log(`getRows`)
 
     const res = await this.query<T>(text, values)

@@ -4,7 +4,7 @@ import { forEach } from 'lodash'
 import { query } from './Database'
 import { stampLog } from './Log'
 import { Fleet, FleetState } from './models/Fleet'
-import { conn } from './db/conn'
+import { db } from './db/conn'
 
 const log = stampLog(`Ticker`)
 
@@ -49,7 +49,7 @@ export class Ticker {
   private async allocateShips(): Promise<void> {
     const $ = log(`allocateShips`)
 
-    const res = await conn.selectRows(`
+    const res = await db.get(`
         SELECT
           f.id
         , f.name
@@ -72,7 +72,7 @@ export class Ticker {
     const bases = res
 
     forEach(bases, async b => {
-      const res = await conn.query(`
+      const res = await db.query(`
         UPDATE fleets
         SET ships = ships + 1
         WHERE id = $1

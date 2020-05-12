@@ -1,15 +1,13 @@
 import { Pool } from 'pg'
 import { Client } from './client'
 
-const config = {
+const pool = new Pool({
   host: 'localhost',
   user: '',
   password: '',
   database: 'pluton',
   port: 5432,
   max: 10
-}
+})
 
-const pool = new Pool(config)
-
-export const conn = new Client(pool)
+export const db = new Client(pool)
