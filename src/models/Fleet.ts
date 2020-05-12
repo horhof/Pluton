@@ -3,13 +3,13 @@ import { Planet } from './Planet'
 
 export enum FleetState {
   /** Sitting idle at its home planet. Can WARP. */
-  HOME = 1,
+  HOME = 'home',
   /** Moving to a remote planet. Can ARRIVE or RETURN. */
-  WARP = 2,
+  WARP = 'warp',
   /** Arrived at remote planet. Can RETURN. */
-  ARRIVE = 3,
+  ARRIVED = 'arrived',
   /** Warping in the other direction. Can reach HOME. */
-  RETURN = 4,
+  RETURN = 'return',
 }
 
 export interface Fleet {

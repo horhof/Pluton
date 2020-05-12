@@ -34,6 +34,7 @@ export const readPlanet =
 export const createPlanetForm =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`createPlanetForm`)
+    $()
 
     const qs = ctx.request.query || {}
     const { star_id } = qs
@@ -48,6 +49,7 @@ export const createPlanetForm =
     const [star] = await res.json() as Star[]
 
     ctx.type = 'html'
+    $(`Rendering form... StarId=%o Star=%o`, star_id, star)
     ctx.body = renderNewPlanet(star_id, star)
   }
 

@@ -6,10 +6,13 @@ import { Star } from './Star'
 const log = stampLog(`Model:Planet`)
 
 export interface Planet {
-  name: string
+  id: number
   index: ID
+  name: string
+  ruler: string
+  // Parent.
   star_id: ID
   star?: Star
-  ruler: string
+  // Children.
   fleets?: Fleet
 }

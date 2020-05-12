@@ -51,12 +51,14 @@ export class Ticker {
 
     const res = await conn.selectRows(`
         SELECT
-          id
-        , name
-        , index
-        , planet_id
-        , ships
-        FROM base_fleets
+          f.id
+        , f.name
+        , f.index
+        , f.planet_id
+        , f.ships
+        FROM fleets AS f
+        WHERE TRUE
+          AND f.is_base IS TRUE
       `, [], v => ({
         id: v.id as number,
         name: v.name as string,

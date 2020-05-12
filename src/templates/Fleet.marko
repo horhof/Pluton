@@ -23,9 +23,9 @@
         </tr>
         <tr>
           <th>Warping</th>
-          <td>${input.state !== 1 ? "Yes" : "No"}</td>
+          <td>${input.state !== 'warp' ? "Yes" : "No"}</td>
         </tr>
-        <if(input.state !== 1)>
+        <if(input.state !== 'home')>
           <tr>
             <th>Target</th>
             <td>
