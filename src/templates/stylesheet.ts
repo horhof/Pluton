@@ -3,7 +3,7 @@ export const template = `
 
   #container {
     color: #222;
-    font-family: "Helvetica Neue", "Helvetica", sans-serif;
+    font-family: "Tex Gyre Heros", "Helvetica Neue", "Helvetica", sans-serif;
     font-size: 18px;
     font-weight: 400;
     line-height: 1.5;
@@ -32,7 +32,7 @@ export const template = `
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Helvetica Neue", "Helvetica", sans-serif;
+    font-family: "Tex Gyre Heros", "Helvetica Neue", "Helvetica", sans-serif;
     margin: 0;
     margin-bottom: 1rem;
     margin-top: 1rem;
