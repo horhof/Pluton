@@ -7,6 +7,7 @@ import { Ctx, sendErr, showErr } from '../Server'
 import { isLeft } from '../types/Either'
 import { getProperty } from './validation'
 import { render as renderNewPlanet } from '../templates/newPlanet'
+import { render as renderPlanet } from '../templates/planet'
 
 const log = stampLog(`Http:Planet`)
 
@@ -25,9 +26,9 @@ export const readPlanet =
       return showErr(ctx, res.message, $, 404)
     }
     const planet = res
-    const template = require('../templates/Planet.marko')
     ctx.type = 'html'
-    ctx.body = template.stream(planet)
+    // @ts-ignore
+    ctx.body = renderPlanet(planet, planet.star!, planet.fleets!)
   }
 
 /** GET /planets/new.html */
