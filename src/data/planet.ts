@@ -82,6 +82,8 @@ export const getPlanetsForStar =
         FROM planets
         WHERE TRUE
           AND star_id = $1
+        ORDER BY
+          index ASC
       `,
       [id],
       a => ({

@@ -56,7 +56,7 @@ export const getFleet =
         WHERE id = $1
       `,
       [id],
-      cast)
+      castFleet)
     if (res instanceof Error) {
       return res
     }
@@ -70,13 +70,16 @@ export const getFleetsForPlanet =
     const $ = log(`getFleetsByPlanet`)
 
     const res = await db.get<Fleet>(`
-        SELECT *
+        SELECT
+          *
         FROM fleets
         WHERE TRUE
           AND planet_id = $1
+        ORDER BY
+          index ASC
       `,
       [id],
-      cast)
+      castFleet)
     if (res instanceof Error) {
       return res
     }
@@ -111,19 +114,19 @@ export const createFleet =
     return fleetId
   }
 
-const cast =
-  (a: any): Fleet => {
+export const castFleet =
+  (r: any): Fleet => {
     return {
-      id: a.id as number,
-      index: a.index as number,
-      name: a.name as string,
-      is_base: a.is_base as boolean,
-      ships: a.ships as number,
-      is_attacking: a.is_attacking as boolean,
-      warp_time: a.warp_time as number,
-      from_home: a.from_home as number,
-      state: a.state as FleetState,
-      planet_id: a.planet_id as number,
-      target_id: a.target_id !== null ? a.target_id as number : undefined,
+      id: r.id as number,
+      index: r.index as number,
+      name: r.name as string,
+      is_base: r.is_base as boolean,
+      ships: r.ships as number,
+      is_attacking: r.is_attacking as boolean,
+      warp_time: r.warp_time as number,
+      from_home: r.from_home as number,
+      state: r.state as FleetState,
+      planet_id: r.planet_id as number,
+      target_id: r.target_id === null ? undefined : r.target_id as number
     }
   }

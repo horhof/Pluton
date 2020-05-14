@@ -1,7 +1,7 @@
 // This module defines the Ticker class which moves the game along.
 
 import { stampLog } from './log'
-import { Fleet, FleetState } from './data/fleet'
+import { Fleet, FleetState, castFleet } from './data/fleet'
 import { db } from './db/conn'
 
 const log = stampLog(`ticker`)
@@ -11,7 +11,6 @@ const DISABLE_TICKER = false
 export class Ticker {
   tick = 0
 
-  /** One tick every minute. */
   intervalMs = 10000
 
   start(): void {
@@ -30,13 +29,13 @@ export class Ticker {
     $(`Starting tick %o...`, this.tick)
 
     $(`Updating bases with new ships...`)
-    // await this.allocateShips()
+    await this.allocateShips()
 
     $(`Moving fleets...`)
-    // await this.move()
+    await this.move()
 
     $(`Executing combat...`)
-    // await this.fight()
+    await this.fight()
 
     $(`Done.`)
   }
@@ -88,37 +87,60 @@ export class Ticker {
   /**
    * Any fleets en route have their ETAs decreased until they land.
    */
-  // private async move(): Promise<void> {
-  //   const $ = log(`move`)
+  private async move(): Promise<void> {
+    const $ = log(`move`)
 
-  //   const readRes = await query({ noun: `fleets?is_base=is.false&state=eq.${FleetState.WARP}` })
-  //   if (!readRes.ok) {
-  //     $(`Failed to read fleets. Res=%O`, await readRes.json())
-  //     throw new Error(`Failed to read fleets.`)
-  //   }
+    const res = await db.get(`
+        SELECT
+          *
+        FROM fleets
+        WHERE TRUE
+          AND is_base IS FALSE
+          AND state IN ($1, $2)
+      `,
+      [FleetState.WARP, FleetState.RETURN],
+      castFleet)
+    if (res instanceof Error) {
+      throw res
+    }
+    const fleets = res
 
-  //   const fleets = await readRes.json() as Fleet[]
-  //   forEach(fleets, b => {
-  //     if (b.from_home !== b.warp_time) {
-  //       const newFromHome = b.from_home + 1
-  //       $(`Moving fleet %o from %o to %o ticks from home`, b.id, b.from_home, newFromHome)
-  //       b.from_home = newFromHome
-  //     }
-  //     else {
-  //       $(`Fleet %o has arrived.`, b.id)
-  //     }
-  //   })
+    fleets.forEach(async f => {
+      switch (f.state) {
+        case FleetState.WARP:
+          if (f.from_home === f.warp_time) {
+            f.state = FleetState.ARRIVED
+            $(`Arrived.`)
+          }
+          else {
+            f.from_home++
+            $(`Moving. From home is now %o.`, f.from_home)
+          }
+          break
+        case FleetState.RETURN:
+          if (f.from_home === 0) {
+            f.state = FleetState.HOME
+            $(`Arrived.`)
+          }
+          else {
+            f.from_home--
+            $(`Moving. From home is now %o.`, f.from_home)
+          }
+          break
+      }
 
-  //   const updateRes = await query({
-  //     verb: 'post',
-  //     noun: 'fleets',
-  //     body: fleets,
-  //     headers: { Prefer: 'resolution=merge-duplicates' },
-  //   })
-  //   if (!updateRes.ok) {
-  //     const json = await updateRes.json()
-  //     $(`Failed to update fleets. Res=%o`, json)
-  //     throw new Error
-  //   }
-  // }
+      $(`Updating...`)
+      const updateRes = await db.query(`
+          UPDATE fleets
+          SET
+            state = $2
+          , from_home = $3
+          WHERE id = $1
+        `,
+        [f.id, f.state, f.from_home])
+      if (updateRes instanceof Error) {
+        throw updateRes
+      }
+    })
+  }
 }
