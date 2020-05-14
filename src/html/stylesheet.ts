@@ -3,7 +3,7 @@ export const template = `
 
   #container {
     color: #222;
-    font-family: "Tex Gyre Heros", "Helvetica Neue", "Helvetica", sans-serif;
+    font-family: "Helvetica", "Helvetica Neue", "Tex Gyre Heros", sans-serif;
     font-size: 18px;
     font-weight: 400;
     line-height: 1.5;
@@ -242,11 +242,11 @@ export const template = `
 
   a.button,
   button {
-    padding: 0.2rem 0.5rem 0.3rem 0.4rem;
+    padding: 0.3rem 0.4rem 0.2rem 0.3rem;
     margin-right: 0.5em;
     background: white;
     border: 1px solid #888;
-    font-size: 100%;
+    font-size: 90%;
     border-radius: 3px;
     cursor: default;
   }

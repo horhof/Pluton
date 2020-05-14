@@ -1,15 +1,35 @@
 import { template as page } from './page'
 import { stampLog } from '../log'
-import { Planet } from '../models/planet'
-import { Star } from '../models/star'
-import { Fleet } from '../models/fleet'
+import { PlanetNav } from '../data/planet'
+import { Star } from '../data/star'
+import { Fleet } from '../data/fleet'
 
 const log = stampLog(`html:planet`)
 
 export const render =
-  (planet: Planet, star: Star, fleets: Fleet[]): string => {
+  (planet: PlanetNav, star: Star, fleets: Fleet[]): string => {
     const $ = log(`render`)
-    let fleetStr = ''
+
+    const prevHtml = planet.prev_id === undefined ? '' : `
+      <tr>
+        <th>Previous</th>
+        <td>
+          <a href="${planet.prev_id}.html">${planet.prev_name}</a>
+          (${star.cluster}:${star.index}:${planet.prev_index})
+        </td>
+      </tr>
+    `
+    const nextHtml = planet.next_id === undefined ? '' : `
+      <tr>
+        <th>Next</th>
+        <td>
+          <a href="${planet.next_id}.html">${planet.next_name}</a>
+          (${star.cluster}:${star.index}:${planet.next_index})
+        </td>
+      </tr>
+    `
+
+    let fleetStr = '<p>None.</p>'
     if (fleets.length > 0) {
       const fleetRows = fleets
         .map(f => `
@@ -44,7 +64,7 @@ export const render =
     }
 
     return page
-      .replace(`<!-- title -->`, `Planet ${planet.name}`)
+      .replace(`<!-- title -->`, `${planet.name}`)
       .replace(`<!-- content -->`, `
         <h1>${planet.name}</h1>
         <table class="horz">
@@ -71,12 +91,14 @@ export const render =
                 <a href="../stars/${star.id}.html">${star.name}</a>
               </td>
             </tr>
+            ${prevHtml}
+            ${nextHtml}
           </tbody>
         </table>
         <h2>Fleets</h2>
           ${fleetStr}
         <p>
-          <a href="../fleets/new.html?planet_id=${planet.id}">Create</a>
+          <a class="button" href="../fleets/new.html?planet_id=${planet.id}">Create</a>
         </p>
       `)
   }

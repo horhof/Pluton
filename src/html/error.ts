@@ -4,9 +4,9 @@ import { stampLog } from '../log'
 const log = stampLog(`html:error`)
 
 export const render =
-  (code: number, msg: string): string => page
-    .replace(`<!-- title -->`, `${code} error`)
+  (title: string, msg: string): string => page
+    .replace(`<!-- title -->`, `${title}`)
     .replace(`<!-- content -->`, `
-      <h1>${code} error</h1>
+      <h1>${title}</h1>
       <p>${msg}</p>
     `)

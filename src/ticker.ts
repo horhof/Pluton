@@ -1,11 +1,10 @@
 // This module defines the Ticker class which moves the game along.
 
-import { forEach } from 'lodash'
 import { stampLog } from './log'
-import { Fleet, FleetState } from './models/fleet'
+import { Fleet, FleetState } from './data/fleet'
 import { db } from './db/conn'
 
-const log = stampLog(`Ticker`)
+const log = stampLog(`ticker`)
 
 const DISABLE_TICKER = false
 
@@ -70,12 +69,13 @@ export class Ticker {
     }
     const bases = res
 
-    forEach(bases, async b => {
+    bases.forEach(async b => {
       const res = await db.query(`
-        UPDATE fleets
-        SET ships = ships + 1
-        WHERE id = $1
-      `, [b.id])
+          UPDATE fleets
+          SET ships = ships + 1
+          WHERE id = $1
+        `,
+        [b.id])
       if (res instanceof Error) {
         throw res
       }

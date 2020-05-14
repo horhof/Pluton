@@ -1,5 +1,5 @@
 import { template as page } from './page'
-import { Planet } from '../models/planet'
+import { Planet } from '../data/planet'
 
 export const render =
   (planet: Planet): string => page
@@ -17,13 +17,13 @@ export const render =
         </p>
       </div>
       <p>
-        <a id="createLink" href="create.html">Create</a>
+        <a class="button" id="createFleet" href="../rpc/createFleet.html">Create</a>
       </p>
       <script>
         const update = () => {
-          const createLink = getId('createLink')
+          const createFleet = getId('createFleet')
           const name = getValue('name')
-          createLink.href = makeUrl('create.html', { planet_id: ${planet.id}, name })
+          createFleet.href = makeUrl('../rpc/createFleet.html', { planet_id: ${planet.id}, name })
         }
         update()
       </script>

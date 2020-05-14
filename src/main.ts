@@ -1,22 +1,18 @@
 // This module spins up the HTTP server and other game components.
 
-import { get } from 'lodash'
 import { stampLog } from './log'
 import { createServer } from './server'
 import { Ticker } from './ticker'
-import * as Database from './database'
+import { getNumber, getString } from './validation'
 
-const log = stampLog(`Main`)
+const log = stampLog(`main`)
 const $ = log()
 
 const main =
   async () => {
-    $(`Starting database service...`)
-    await Database.start()
-
     $(`Starting HTTP server...`)
-    const prefix = get(process.env, 'BASE_URL', '')
-    const port = get(process.env, 'PORT', 3000)
+    const prefix = getString(process.env, 'BASE_URL') || ''
+    const port = getNumber(process.env, 'PORT') || 3000
     const server = await createServer(prefix)
     server.listen(port)
     $(`HTTP server listening at http://localhost:${port}${prefix ? `/${prefix}` : ''}`)

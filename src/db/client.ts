@@ -15,9 +15,11 @@ export class Client {
     return res
   }
 
-  async get<T>(text: string, values: any[], convert: (v: any) => T): Promise<T[] | Error> {
+  async get<T>(text: string, values: any[], cast: (v: any) => T): Promise<T[] | Error> {
     const $ = log(`get`)
 
+    // $(`get> Text=%s`, text)
+    // $(`get> Values=%o`, values)
     const res = await this.query<T>(text, values)
     if (res instanceof Error) {
       $(`Error: query failed: %o`, res.message)
@@ -28,6 +30,6 @@ export class Client {
       return []
     }
 
-    return res.rows.map(convert)
+    return res.rows.map(cast)
   }
 }

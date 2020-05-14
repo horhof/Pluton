@@ -1,9 +1,8 @@
-import { stampLog } from '../log'
-import { ID, N } from '../types/number'
-import { Planet } from './planet'
 import { db } from '../db/conn'
+import { stampLog } from '../log'
+import { Planet } from './planet'
 
-const log = stampLog(`model:fleet`)
+const log = stampLog(`data:fleet`)
 
 export enum FleetState {
   /** Sitting idle at its home planet. Can WARP. */
@@ -47,8 +46,27 @@ export interface Fleet {
   target?: Planet
 }
 
-export const getFleetsByPlanet =
-  async (planetId: number): Promise<Fleet[] | Error> => {
+export const getFleet =
+  async (id: number): Promise<Fleet | undefined | Error> => {
+    const $ = log(`getFleet`)
+
+    const res = await db.get<Fleet>(`
+        SELECT *
+        FROM fleets
+        WHERE id = $1
+      `,
+      [id],
+      cast)
+    if (res instanceof Error) {
+      return res
+    }
+    const [fleet] = res
+
+    return fleet || undefined
+  }
+
+export const getFleetsForPlanet =
+  async (id: number): Promise<Fleet[] | Error> => {
     const $ = log(`getFleetsByPlanet`)
 
     const res = await db.get<Fleet>(`
@@ -57,8 +75,8 @@ export const getFleetsByPlanet =
         WHERE TRUE
           AND planet_id = $1
       `,
-      [planetId],
-      convert)
+      [id],
+      cast)
     if (res instanceof Error) {
       return res
     }
@@ -77,7 +95,7 @@ export const createFleet =
         VALUES
           (
             $1
-          , (SELECT coalesce(max(index)) FROM fleets WHERE planet_id = $1) + 1
+          , (SELECT coalesce(max(index), 0) FROM fleets WHERE planet_id = $1) + 1
           , $2
           )
         RETURNING id
@@ -93,7 +111,7 @@ export const createFleet =
     return fleetId
   }
 
-const convert =
+const cast =
   (a: any): Fleet => {
     return {
       id: a.id as number,

@@ -9,20 +9,25 @@ import Koa from 'koa'
 import mount from 'koa-mount'
 import Router from 'koa-router'
 import serve from 'koa-static'
-import { get } from 'lodash'
+import { render as renderError } from './html/error'
+import { template as intro } from './html/intro'
+import * as ClusterCtrl from './http/clusters'
+import * as FleetCtrl from './http/fleets'
+import * as PlanetCtrl from './http/planets'
+import * as StarCtrl from './http/stars'
 import { Logger, stampLog } from './log'
-import { render as renderError } from './templates/error'
-import { template as intro } from './templates/intro'
-import * as ClusterCtrl from './controllers/clusters'
-import * as FleetCtrl from './controllers/fleets'
-import * as PlanetCtrl from './controllers/planets'
-import * as StarCtrl from './controllers/stars'
 
-const log = stampLog(`Http`)
+const log = stampLog(`server`)
 
 export type Ctx = Koa.ParameterizedContext<any, {}>
 
 type KoaServer = Promise<Koa<any, {}>>
+
+const ErrorDesc: { [key: number]: string } = {
+  400: `Bad parameters`,
+  404: `No such resource`,
+  500: `Program error`,
+}
 
 export const createServer =
   async (prefix = ''): KoaServer => {
@@ -45,18 +50,20 @@ const bindRoutes =
       ctx.body = intro
     })
 
-    router.get(`${prefix}/clusters.html`, ClusterCtrl.readClusters)
-    router.get(`${prefix}/clusters/:index.html`, ClusterCtrl.readCluster)
+    router.get(`${prefix}/clusters.html`, ClusterCtrl.getClusters)
+    router.get(`${prefix}/clusters/:idx.html`, ClusterCtrl.getClustersByIdx)
 
-    router.get(`${prefix}/stars/:id.html`, StarCtrl.readStar)
+    router.get(`${prefix}/stars/:id.html`, StarCtrl.getStarById)
 
-    router.get(`${prefix}/planets/new.html`, PlanetCtrl.planetsNew)
-    router.get(`${prefix}/planets/create.html`, PlanetCtrl.planetsCreate)
-    router.get(`${prefix}/planets/:id.html`, PlanetCtrl.planetsId)
+    router.get(`${prefix}/planets/new.html`, PlanetCtrl.getNewPlanetForm)
+    router.get(`${prefix}/planets/:id.html`, PlanetCtrl.getPlanetById)
+    router.get(`${prefix}/rpc/createPlanet.html`, PlanetCtrl.createPlanetRpc)
 
-    router.get(`${prefix}/fleets/new.html`, FleetCtrl.createFleetForm)
-    router.get(`${prefix}/fleets/create.html`, FleetCtrl.fleetsCreate)
-    router.get(`${prefix}/fleets/:id.html`, FleetCtrl.readFleet)
+    router.get(`${prefix}/fleets/new.html`, FleetCtrl.getNewFleetForm)
+    router.get(`${prefix}/fleets/:id.html`, FleetCtrl.getFleetById)
+    router.get(`${prefix}/rpc/createFleet.html`, FleetCtrl.createFleetRpc)
+    router.get(`${prefix}/rpc/sendFleet.html`, FleetCtrl.sendFleetRpc)
+    router.get(`${prefix}/rpc/abortMission.html`, FleetCtrl.abortMissionRpc)
     // router.put(`${prefix}/fleets/:id.json`, koaBody(), FleetCtrl.updateFleet)
   }
 
@@ -67,13 +74,5 @@ export const showErr =
     logger(msg)
     ctx.status = code
     ctx.type = 'html'
-    ctx.body = renderError(code, msg)
-  }
-
-/** Log and send a JSON response with the given message and HTTP response code. */
-export const sendErr =
-  (ctx: Ctx, msg: string, logger: Logger, code = 500): void => {
-    logger(msg)
-    ctx.status = code
-    ctx.body = { code, msg }
+    ctx.body = renderError(`${ErrorDesc[code]} (${code})`, msg)
   }

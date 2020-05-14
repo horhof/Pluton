@@ -1,20 +1,18 @@
-import { get } from 'lodash'
-import { query } from '../database'
+import { getFleetsForPlanet } from '../data/fleet'
+import { createPlanet, getPlanet } from '../data/planet'
+import { getStar, getStarByPlanet } from '../data/star'
+import { render as renderNewPlanet } from '../html/newPlanet'
+import { render as renderPlanet } from '../html/planet'
 import { stampLog } from '../log'
-import { getFleetsByPlanet } from '../models/fleet'
-import { createPlanet, getPlanet } from '../models/planet'
-import { getStarByPlanet, Star, getStar } from '../models/star'
 import { Ctx, showErr } from '../server'
-import { render as renderNewPlanet } from '../templates/newPlanet'
-import { render as renderPlanet } from '../templates/planet'
-import { getProperty } from './validation'
+import { getNumber, getProperty, getString } from '../validation'
 
-const log = stampLog(`Http:Planet`)
+const log = stampLog(`http:planet`)
 
-/** GET /planets/<ID>.html */
-export const planetsId =
+/** /planets/<ID>.html */
+export const getPlanetById =
   async (ctx: Ctx): Promise<void> => {
-    const $ = log(`readPlanet`)
+    const $ = log(`getPlanetById`)
 
     $(`Parsing parameters...`)
     const id = getProperty<number>(ctx.params, 'id', Number, isFinite)
@@ -43,7 +41,7 @@ export const planetsId =
     const star = starRes
 
     $(`Done. Fetching fleets for planet %o...`, id)
-    const fleetsRes = await getFleetsByPlanet(id)
+    const fleetsRes = await getFleetsForPlanet(id)
     if (fleetsRes instanceof Error) {
       return showErr(ctx, fleetsRes.message, $, 500)
     }
@@ -53,10 +51,10 @@ export const planetsId =
     ctx.body = renderPlanet(planet, star, fleets)
   }
 
-/** GET /planets/new.html */
-export const planetsNew =
+/** /planets/new.html */
+export const getNewPlanetForm =
   async (ctx: Ctx): Promise<void> => {
-    const $ = log(`planetsNew`)
+    const $ = log(`getNewPlanetForm`)
 
     const qs = ctx.request.query || {}
     const { star_id } = qs
@@ -78,26 +76,25 @@ export const planetsNew =
     ctx.body = renderNewPlanet(star_id, star)
   }
 
-/** GET /planets/create.html, { star_id, name, ruler } */
-export const planetsCreate =
+/** /rpc/createPlanet.html { star_id, name, ruler } */
+export const createPlanetRpc =
   async (ctx: Ctx): Promise<void> => {
-    const $ = log(`planetsCreate`)
+    const $ = log(`createPlanetRpc`)
 
-    $(`Processing parameters...`)
     const args = ctx.request.query
-    const name = get(args, 'name')
-    const ruler = get(args, 'ruler')
-    const star_id = get(args, 'star_id')
 
-    if (!name) {
+    const name = getString(args, 'name')
+    if (name === undefined) {
       return showErr(ctx, `No planet name was given.`, $, 400)
     }
 
-    if (!ruler) {
+    const ruler = getString(args, 'ruler')
+    if (ruler === undefined) {
       return showErr(ctx, `No ruler name was given.`, $, 400)
     }
 
-    if (!star_id) {
+    const star_id = getNumber(args, 'star_id')
+    if (star_id === undefined) {
       return showErr(ctx, `No star ID was given.`, $, 400)
     }
 
@@ -110,5 +107,5 @@ export const planetsCreate =
     }
     const id = res
 
-    ctx.redirect(`${id}.html`)
+    ctx.redirect(`../planets/${id}.html`)
   }

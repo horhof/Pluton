@@ -27,6 +27,9 @@ export const template = `
       <title>
         <!-- title -->
       </title>
+      <script>
+        ${js}
+      </script>
     </head>
     <body>
       <div id="container">
@@ -35,9 +38,6 @@ export const template = `
           <a href="/">Home</a>
         </footer>
       </div>
-      <script>
-        ${js}
-      </script>
     </body>
   </html>
 `;

@@ -1,4 +1,4 @@
-import { Star } from '../models/star'
+import { Star } from '../data/star'
 import { template as page } from './page'
 
 export const render =
@@ -20,17 +20,20 @@ export const render =
           <a href="../stars/${starId}.html">${star.name}</a>
         </p>
       </div>
-      <p><a id="createLink" href="create.html">Create</a></p>
+      <p>
+        <a class="button" id="createPlanet" href="../rpc/createPlanet.html">Create</a>
+      </p>
       <div class="debug">
         <h2>Debug</h2>
         <pre>${JSON.stringify(star, undefined, 2)} </pre>
       </div>
       <script>
         const update = () => {
-          const createLink = getId('createLink')
+          const createPlanet = getId('createPlanet')
           const name = getValue('name')
           const ruler = getValue('ruler')
-          createLink.href = makeUrl('create.html', { star_id: ${starId}, name, ruler })
+          createPlanet.href = makeUrl('../rpc/createPlanet.html', { star_id: ${starId}, name, ruler })
+          console.debug('Link=%o', createPlanet.href)
         }
         update()
       </script>
