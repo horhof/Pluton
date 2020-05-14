@@ -1,6 +1,7 @@
 // This module defines the Ticker class which moves the game along.
 
 import { stampLog } from './log'
+import { castPlanet } from './data/planet'
 import { Fleet, FleetState, castFleet } from './data/fleet'
 import { db } from './db/conn'
 
@@ -48,21 +49,13 @@ export class Ticker {
 
     const res = await db.get(`
         SELECT
-          f.id
-        , f.name
-        , f.index
-        , f.planet_id
-        , f.ships
-        FROM fleets AS f
+          *
+        FROM fleets
         WHERE TRUE
-          AND f.is_base IS TRUE
-      `, [], v => ({
-        id: v.id as number,
-        name: v.name as string,
-        index: v.index as number,
-        planet_id: v.planet_id as number,
-        ships: v.ships as number,
-      }))
+          AND is_base IS TRUE
+      `,
+      [],
+      castFleet)
     if (res instanceof Error) {
       throw res
     }
@@ -82,6 +75,39 @@ export class Ticker {
   }
 
   private async fight(): Promise<void> {
+    const $ = log(`fight`)
+
+    const targetRes = await db.get(`
+        SELECT
+          DISTINCT ON (fleets.target_id)
+          planets.*
+        FROM fleets
+        LEFT JOIN planets
+          ON planets.id = fleets.target_id
+        WHERE TRUE
+          AND fleets.state = $1
+      `,
+      [FleetState.ARRIVED],
+      castPlanet)
+    if (targetRes instanceof Error) {
+      throw targetRes
+    }
+    const targets = targetRes
+
+    targets.forEach(async t => {
+      $(`Fight on %o.`, t.name)
+      // const updateRes = await db.query(`
+      //     UPDATE fleets
+      //     SET
+      //       state = $2
+      //     , from_home = $3
+      //     WHERE id = $1
+      //   `,
+      //   [f.id, f.state, f.from_home])
+      // if (updateRes instanceof Error) {
+      //   throw updateRes
+      // }
+    })
   }
 
   /**

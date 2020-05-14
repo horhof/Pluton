@@ -147,3 +147,12 @@ export const createPlanet =
 
     return planetId
   }
+
+export const castPlanet =
+  (r: any): Planet => ({
+    id: r.id as number,
+    index: r.index as number,
+    name: r.name as string,
+    ruler: r.ruler as string,
+    star_id: r.star_id as number,
+  })
