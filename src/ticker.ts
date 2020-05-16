@@ -9,12 +9,14 @@ const log = stampLog(`ticker`)
 
 const DISABLE_TICKER = false
 
+const SEC_PER_TICK = 60
+
 const RESOURCE_PER_TICK = 100
 
 export class Ticker {
   tick = 0
 
-  intervalMs = 10000
+  intervalMs = SEC_PER_TICK * 1000
 
   start(): void {
     this.run()

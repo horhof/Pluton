@@ -205,9 +205,10 @@ export const abortMissionRpc =
         SET
           target_id = NULL
         , state = $2
+        , warp_time = $3
         WHERE id = $1
       `,
-      [id, FleetState.RETURN])
+      [id, FleetState.RETURN, fleet.from_home])
     if (updateRes instanceof Error) {
       return showErr(ctx, `Failed to update fleet ${id}: ${updateRes.message}`, $, 500)
     }
