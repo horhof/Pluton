@@ -70,8 +70,9 @@ const bindRoutes =
     router.get(`${prefix}/login.html`, UserCtrl.getLoginForm)
     router.get(`${prefix}/rpc/login.html`, UserCtrl.login)
 
-    router.get(`${prefix}/military.html`, UserCtrl.getMilitary)
-    router.get(`${prefix}/production.html`, UserCtrl.getProduction)
+    router.get(`${prefix}/planet.html`, UserCtrl.getUserPlanet)
+    router.get(`${prefix}/military.html`, UserCtrl.getUserMilitary)
+    router.get(`${prefix}/production.html`, UserCtrl.getUserProduction)
   }
 
 

@@ -16,7 +16,7 @@ export const template = page
         the universe.
       </li>
       <li>
-        <a href="login.html">Login</a>.
+        View <a href="planet.html">your planet</a> or <a href="login.html">login</a>.
       </li>
     </ul>
   `)

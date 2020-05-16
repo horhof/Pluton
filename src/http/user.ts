@@ -85,8 +85,26 @@ export const login =
     ctx.redirect(`../planets/${planetId}.html`)
   }
 
+/** /planet.html */
+export const getUserPlanet =
+  async (ctx: Ctx): Promise<void> => {
+    const $ = log(`getUserPlanet`)
+
+    // Validate auth.
+    const username = ctx.cookies.get(CookieKeys.Username)
+    const token = ctx.cookies.get(CookieKeys.Token)
+    const authRes = await getPlanetIdForUser(username, token)
+    if (authRes instanceof Error || authRes === undefined) {
+      return ctx.redirect('login.html')
+    }
+    const planetId = authRes
+
+    ctx.redirect(`../planets/${planetId}.html`)
+  }
+
+
 /** /military.html */
-export const getMilitary =
+export const getUserMilitary =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`getMilitary`)
 
@@ -121,7 +139,7 @@ export const getMilitary =
   }
 
 /** /production.html */
-export const getProduction =
+export const getUserProduction =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`getProduction`)
 
