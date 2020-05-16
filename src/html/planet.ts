@@ -1,4 +1,4 @@
-import { template as page } from './page'
+import { render as renderPage, template as page } from './page'
 import { stampLog } from '../log'
 import { PlanetNav } from '../data/planet'
 import { Star } from '../data/star'
@@ -9,6 +9,16 @@ const log = stampLog(`html:planet`)
 export const render =
   (planet: PlanetNav, star: Star, fleets: Fleet[], userPlanetId: any): string => {
     const $ = log(`render`)
+
+    let prefetch = `
+      <link rel="prefetch" href="../stars/${planet.star_id}.html">
+    `
+    if (planet.prev_id) {
+      prefetch += `<link rel="prefetch" href="${planet.prev_id}.html">`
+    }
+    if (planet.next_id) {
+      prefetch += `<link rel="prefetch" href="${planet.next_id}.html">`
+    }
 
     const prevHtml = planet.prev_id === undefined ? '' : `
       <tr>
@@ -72,9 +82,12 @@ export const render =
         </tr>
       `
 
-    return page
-      .replace(`<!-- title -->`, `${planet.name}`)
-      .replace(`<!-- content -->`, `
+    return renderPage({
+      title: planet.name,
+      head: `
+        ${prefetch}
+      `,
+      content: `
         <h1>${planet.name}</h1>
         <table class="horz">
           <tbody>
@@ -105,5 +118,6 @@ export const render =
             ${adminHtml}
           </tbody>
         </table>
-      `)
+      `
+    })
   }

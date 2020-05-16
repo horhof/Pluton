@@ -30,7 +30,7 @@ export const render =
 
     const planetsHtml = planets.length < 1 ? '<p>None.</p>' : '<ol>' + planets
       .map(p =>
-        `<li><a href="../planets/${p.id}.html">${p.name}</li>`)
+        `<li><a href="../planets/${p.id}.html">${p.name}</a></li>`)
       .join('') + '</ol>'
 
     return page
