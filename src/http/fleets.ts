@@ -1,7 +1,7 @@
 import { createFleet, getFleet, FleetState } from '../data/fleet'
 import { getPlanet, Planet } from '../data/planet'
 import { render as renderFleet } from '../html/fleet'
-import { render as renderNewFleet } from '../html/newFleet'
+import { render as renderNewFleetForm } from '../html/newFleet'
 import { stampLog } from '../log'
 import { Ctx, showErr } from '../server'
 import { getProperty, getNumber, getString } from '../validation'
@@ -52,8 +52,12 @@ export const getFleetById =
       target = targetRes
     }
 
+    // @ts-ignore
+    const squadrons = []
+
     ctx.type = 'html'
-    ctx.body = renderFleet(fleet, planet, target)
+    // @ts-ignore
+    ctx.body = renderFleet(fleet, squadrons, planet, target)
   }
 
 /** /fleets/new.html */
@@ -77,7 +81,7 @@ export const getNewFleetForm =
     const planet = planetRes
 
     ctx.type = 'html'
-    ctx.body = renderNewFleet(planet)
+    ctx.body = renderNewFleetForm(planet)
   }
 
 /** /rpc/createFleet.html { planet_id, name } */
@@ -130,7 +134,7 @@ export const sendFleetRpc =
     if (mission === 'attack') {
       isAttacking = true
     }
-    else if (mission === 'attack') {
+    else if (mission === 'defend') {
       isAttacking = false
     }
     else {

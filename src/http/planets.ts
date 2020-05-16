@@ -1,11 +1,14 @@
 import { getFleetsForPlanet } from '../data/fleet'
 import { createPlanet, getPlanet } from '../data/planet'
 import { getStar, getStarByPlanet } from '../data/star'
-import { render as renderNewPlanet } from '../html/newPlanet'
+import { render as renderNewPlanetForm } from '../html/newPlanet'
 import { render as renderPlanet } from '../html/planet'
 import { stampLog } from '../log'
 import { Ctx, showErr } from '../server'
 import { getNumber, getProperty, getString } from '../validation'
+import { CookieKeys } from './user'
+import { getPlanetIdForUser, createUser } from '../data/user'
+import { db } from '../db/conn'
 
 const log = stampLog(`http:planet`)
 
@@ -13,6 +16,12 @@ const log = stampLog(`http:planet`)
 export const getPlanetById =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`getPlanetById`)
+
+    const username = ctx.cookies.get(CookieKeys.Username)
+    const token = ctx.cookies.get(CookieKeys.Token)
+    const authRes = await getPlanetIdForUser(username, token)
+    // @ts-ignore
+    const userPlanetId = isFinite(authRes) ? authRes : undefined
 
     $(`Parsing parameters...`)
     const id = getProperty<number>(ctx.params, 'id', Number, isFinite)
@@ -26,7 +35,7 @@ export const getPlanetById =
       return showErr(ctx, planetRes.message, $, 500)
     }
     if (planetRes === undefined) {
-      return showErr(ctx, `No such planet ${id}`, $, 404)
+      return showErr(ctx, `No such planet "${id}"`, $, 404)
     }
     const planet = planetRes
 
@@ -48,7 +57,7 @@ export const getPlanetById =
     const fleets = fleetsRes
 
     ctx.type = 'html'
-    ctx.body = renderPlanet(planet, star, fleets)
+    ctx.body = renderPlanet(planet, star, fleets, userPlanetId)
   }
 
 /** /planets/new.html */
@@ -73,15 +82,25 @@ export const getNewPlanetForm =
 
     ctx.type = 'html'
     $(`Rendering form... StarId=%o Star=%o`, star_id, star)
-    ctx.body = renderNewPlanet(star_id, star)
+    ctx.body = renderNewPlanetForm(star_id, star)
   }
 
-/** /rpc/createPlanet.html { star_id, name, ruler } */
+/** /rpc/create-planet.html { star_id, name, ruler } */
 export const createPlanetRpc =
   async (ctx: Ctx): Promise<void> => {
     const $ = log(`createPlanetRpc`)
 
     const args = ctx.request.query
+
+    const username = getString(args, 'username')
+    if (username === undefined) {
+      return showErr(ctx, `No username was given.`, $, 400)
+    }
+
+    const password = getString(args, 'password')
+    if (password === undefined) {
+      return showErr(ctx, `No password was given.`, $, 400)
+    }
 
     const name = getString(args, 'name')
     if (name === undefined) {
@@ -101,11 +120,32 @@ export const createPlanetRpc =
     const planet = { name, ruler, star_id }
     $(`Done. Planet=%o`, planet)
 
-    const res = await createPlanet(star_id, name, ruler)
-    if (res instanceof Error) {
-      return showErr(ctx, `Failed to create planet: ${res.message}`, $, 500)
+    const planetRes = await createPlanet(star_id, name, ruler)
+    if (planetRes instanceof Error) {
+      return showErr(ctx, `Failed to create planet: ${planetRes.message}`, $, 500)
     }
-    const id = res
+    const id = planetRes
+
+    const userRes = await createUser(username, password, id)
+    if (userRes instanceof Error) {
+      return showErr(ctx, `Failed to create user for planet: ${userRes.message}`, $, 500)
+    }
+
+    const token = String(Date.now())
+    const tokenRes = await db.query(`
+        UPDATE users
+        SET token = $1
+        WHERE username = $2
+      `,
+      [token, username])
+    if (tokenRes instanceof Error) {
+      $(`Failed to insert token to log in user: %o.`, tokenRes.message)
+      throw tokenRes
+    }
+
+    ctx.cookies.set(CookieKeys.Username, username)
+    ctx.cookies.set(CookieKeys.Token, token)
+    ctx.cookies.set(CookieKeys.Planet, String(id))
 
     ctx.redirect(`../planets/${id}.html`)
   }

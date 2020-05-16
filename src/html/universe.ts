@@ -31,8 +31,5 @@ export const render =
       .replace(`<!-- content -->`, `
         <h1>Universe clusters</h1>
         ${clusterHtml}
-        <div class="debug">
-          <pre>${JSON.stringify({ clusters }, undefined, 2)}</pre>
-        </div>
       `)
   }

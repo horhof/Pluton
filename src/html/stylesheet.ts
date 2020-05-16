@@ -113,9 +113,7 @@ export const template = `
 
   .id,
   code,
-  pre,
-  textarea,
-  input {
+  pre {
     font-family: "Courier Prime", "Fantasque Sans Mono", "PT Mono", "Fira Code", monospace;
   }
 
@@ -219,11 +217,10 @@ export const template = `
 
   textarea,
   input {
-    font-size: 90%;
   }
 
   input {
-    padding: 0.5rem;
+    padding: 0.3rem;
     border: 1px solid #888;
     border-radius: 3px;
   }
@@ -233,15 +230,7 @@ export const template = `
   }
 
   a.button {
-    -webkit-appearance: button;
-    -moz-appearance: button;
-    appearance: button;
-    text-decoration: none;
     color: initial;
-  }
-
-  a.button,
-  button {
     padding: 0.3rem 0.4rem 0.2rem 0.3rem;
     margin-right: 0.5em;
     background: white;

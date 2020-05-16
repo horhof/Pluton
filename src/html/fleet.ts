@@ -1,4 +1,5 @@
 import { Fleet, FleetState } from '../data/fleet'
+import { Squadron } from '../data/squadron'
 import { Planet } from '../data/planet'
 import { stampLog } from '../log'
 import { template as page } from './page'
@@ -6,7 +7,7 @@ import { template as page } from './page'
 const log = stampLog(`html:fleet`)
 
 export const render =
-  (fleet: Fleet, planet: Planet, target?: Planet): string => {
+  (fleet: Fleet, squadrons: Squadron[], planet: Planet, target?: Planet): string => {
     const $ = log(`render`)
 
     let sendForm =''
@@ -18,12 +19,16 @@ export const render =
             <input id="target_id" value="" oninput="updateTarget()"/>
           </p>
           <p>
-            <label>Mission</label>
-            <input id="mission" value="attack" oninput="updateTarget()"/>
+            <label for="attack">Attack</label>
+            <input id="attack" type="radio" name="mission" value="attack" oninput="updateTarget()"/>
+          </p>
+          <p>
+            <label for="defend">Defend</label>
+            <input id="defend" type="radio" name="mission" value="defend" oninput="updateTarget()"/>
           </p>
         </div>
         <p>
-          <a class="button" id="sendFleet" href="../rpc/sendFleet.html">Send</a>
+          <a class="button" id="send-fleet">Send</a>
         </p>
       `
     }
@@ -35,7 +40,7 @@ export const render =
           ${fleet.is_attacking ? 'Attacking' : 'Defending'}
         </span>
         <a href="../planets/${target.id}.html">${target.name}</a>
-        <a class="button" id="abortMission" href="../rpc/abortMission.html?id=${fleet.id}">Abort</a>
+        <a class="button" id="abort-mission" href="../rpc/abort-mission.html?id=${fleet.id}">Abort</a>
       `
     }
 
@@ -68,13 +73,42 @@ export const render =
       <tr>
         <th>State</th>
         <td>
-          ${fleet.state === FleetState.HOME ? 'Home' : ''}
-          ${fleet.state === FleetState.WARP ? 'Warping' : ''}
-          ${fleet.state === FleetState.ARRIVED ? 'Arrived' : ''}
-          ${fleet.state === FleetState.RETURN ? 'Returning' : ''}
+          ${fleet.state === FleetState.HOME ? 'At home planet' : ''}
+          ${fleet.state === FleetState.WARP ? 'Warping to target' : ''}
+          ${fleet.state === FleetState.ARRIVED ? 'Arrived at target' : ''}
+          ${fleet.state === FleetState.RETURN ? 'Returning from target' : ''}
         </td>
       </tr>
     `
+
+    let squadronHtml = '<p>None.</p>'
+    if (squadrons.length > 0) {
+      const squadronRows = squadrons
+        .map(s => `
+          <tr>
+            <td class="center">${s.index}</td>
+            <td>
+              <a href="../squadrons/${s.id}.html">${s.name}</a>
+            </td>
+            <td class="id right">${s.ships}</td>
+          </tr>`)
+        .join('')
+      squadronHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th class="center">No.</th>
+              <th>Name</th>
+              <th class="right">Ships</th>
+              <th class="center">Mission</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${squadronRows}
+          </tbody>
+        </table>
+      `
+    }
 
     return page
       .replace(`<!-- title -->`, `${fleet.name}`)
@@ -94,20 +128,18 @@ export const render =
                 <a href="../planets/${planet.id}.html">${planet.name}</a>
               </td>
             </tr>
-            <tr>
-              <th>Ships</th>
-              <td>${fleet.ships}</td>
-            </tr>
             ${stateHtml}
           </tbody>
         </table>
         ${missionHtml}
+        <h2>Squadrons</h2>
+        ${squadronHtml}
         <script>
           const updateTarget = () => {
-            const sendFleet = getId('sendFleet')
+            const sendFleet = getId('send-fleet')
             const target_id = getValue('target_id')
-            const mission = getValue('mission')
-            sendFleet.href = makeUrl('../rpc/sendFleet.html', { id: ${fleet.id}, target_id, mission })
+            const mission = getRadio('mission')
+            sendFleet.href = makeUrl('../rpc/send-fleet.html', { id: ${fleet.id}, target_id, mission })
             console.debug('Link=%o', sendFleet.href)
           }
           updateTarget()

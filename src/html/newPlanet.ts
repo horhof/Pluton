@@ -6,7 +6,19 @@ export const render =
     .replace(`<!-- title -->`, 'Create planet')
     .replace(`<!-- content -->`, `
       <h1>Create planet</h1>
+      <p>
+        Username won't be displayed anywhere on the site.
+        The password is transmitted over GET requests and is not secure.
+      </p>
       <div class="form-group">
+        <p>
+          <label>Username</label>
+          <input id="username" value="" oninput="update()"/>
+        </p>
+        <p>
+          <label>Password</label>
+          <input id="password" value="" oninput="update()"/>
+        </p>
         <p>
           <label>Planet name</label>
           <input id="name" value="Planet X" oninput="update()"/>
@@ -21,19 +33,22 @@ export const render =
         </p>
       </div>
       <p>
-        <a class="button" id="createPlanet" href="../rpc/createPlanet.html">Create</a>
+        <a class="button" id="create-planet">Create</a>
       </p>
-      <div class="debug">
-        <h2>Debug</h2>
-        <pre>${JSON.stringify(star, undefined, 2)} </pre>
-      </div>
       <script>
         const update = () => {
-          const createPlanet = getId('createPlanet')
+          const createPlanet = getId('create-planet')
           const name = getValue('name')
           const ruler = getValue('ruler')
-          createPlanet.href = makeUrl('../rpc/createPlanet.html', { star_id: ${starId}, name, ruler })
-          console.debug('Link=%o', createPlanet.href)
+          const username = getValue('username')
+          const password = getValue('password')
+          createPlanet.href = makeUrl('../rpc/create-planet.html', {
+            star_id: ${starId},
+            username,
+            password,
+            name,
+            ruler,
+          })
         }
         update()
       </script>

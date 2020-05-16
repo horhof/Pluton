@@ -17,13 +17,13 @@ export const render =
         </p>
       </div>
       <p>
-        <a class="button" id="createFleet" href="../rpc/createFleet.html">Create</a>
+        <a class="button" id="create-fleet">Create</a>
       </p>
       <script>
         const update = () => {
-          const createFleet = getId('createFleet')
+          const createFleet = getId('create-fleet')
           const name = getValue('name')
-          createFleet.href = makeUrl('../rpc/createFleet.html', { planet_id: ${planet.id}, name })
+          createFleet.href = makeUrl('../rpc/create-fleet.html', { planet_id: ${planet.id}, name })
         }
         update()
       </script>

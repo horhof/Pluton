@@ -49,8 +49,5 @@ export const render =
         <ol>
           ${starStr}
         </ol>
-        <div class="debug">
-          <pre>${JSON.stringify({ idx, prev, next, stars }, undefined, 2)}</pre>
-        </div>
       `)
   }

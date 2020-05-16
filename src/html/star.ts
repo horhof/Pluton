@@ -60,9 +60,5 @@ export const render =
         <p>
           <a class="button" href="../planets/new.html?star_id=${star.id}">Create</a>
         </p>
-        <div class="debug">
-          <pre>${JSON.stringify(star, undefined, 2)}</pre>
-          <pre>${JSON.stringify(planets, undefined, 2)}</pre>
-        </div>
       `)
   }

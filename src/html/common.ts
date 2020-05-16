@@ -5,6 +5,19 @@ export const template = `
   const getValue =
     id => document.getElementById(id).value
 
+  const getRadio =
+    name => {
+      let value
+      const radios = document.getElementsByName(name)
+      for (const radio of radios) {
+        if (radio.checked) {
+          value = radio.value
+          break
+        }
+      }
+      return value
+    }
+
   const makeUrl =
     (url, props) => {
       // console.log('Url=%o', url)

@@ -5,11 +5,21 @@ import { Star } from './star'
 
 const log = stampLog(`data:planet`)
 
+const INIT_M_ASTEROIDS = 3
+const INIT_C_ASTEROIDS = 0
+const INIT_R_ASTEROIDS = 0
+
 export interface Planet {
   id: number
   index: number
   name: string
   ruler: string
+  asteroid_m: number
+  resource_m: number
+  asteroid_c: number
+  resource_c: number
+  asteroid_r: number
+  resource_r: number
   // Parent.
   star_id: number
   star?: Star
@@ -55,6 +65,12 @@ export const getPlanet =
         index: a.index as number,
         name: a.name as string,
         ruler: a.ruler as string,
+        asteroid_m: a.asteroid_m as number,
+        resource_m: a.resource_m as number,
+        asteroid_c: a.asteroid_c as number,
+        resource_c: a.resource_c as number,
+        asteroid_r: a.asteroid_r as number,
+        resource_r: a.resource_r as number,
         star_id: a.star_id as number,
         prev_id: a.prev_id as number || undefined,
         prev_index: a.prev_index as number || undefined,
@@ -86,13 +102,7 @@ export const getPlanetsForStar =
           index ASC
       `,
       [id],
-      a => ({
-        id: a.id as number,
-        index: a.index as number,
-        name: a.name as string,
-        ruler: a.ruler as string,
-        star_id: a.star_id as number,
-      }))
+      castPlanet)
     if (res instanceof Error) {
       return res
     }
@@ -107,17 +117,23 @@ export const createPlanet =
 
     const planetRes = await db.get<number>(`
         INSERT INTO planets
-          (star_id, index, name, ruler)
+          (star_id, index, name, ruler, asteroids_m, asteroids_c, asteroids_r)
         VALUES
           (
             $1
           , (SELECT coalesce(max(index), 0) FROM planets WHERE star_id = $1) + 1
           , $2
           , $3
+          , $4
+          , $5
+          , $6
           )
         RETURNING id
       `,
-      [star_id, name, ruler],
+      [
+        star_id, name, ruler,
+        INIT_M_ASTEROIDS, INIT_C_ASTEROIDS, INIT_R_ASTEROIDS,
+      ],
       a => a.id as number)
     if (planetRes instanceof Error) {
       return planetRes
@@ -154,5 +170,11 @@ export const castPlanet =
     index: r.index as number,
     name: r.name as string,
     ruler: r.ruler as string,
+    asteroid_m: r.asteroid_m as number,
+    resource_m: r.resource_m as number,
+    asteroid_c: r.asteroid_c as number,
+    resource_c: r.resource_c as number,
+    asteroid_r: r.asteroid_r as number,
+    resource_r: r.resource_r as number,
     star_id: r.star_id as number,
   })

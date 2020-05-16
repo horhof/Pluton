@@ -1,6 +1,5 @@
 import { db } from '../db/conn'
 import { stampLog } from '../log'
-import { Planet } from './planet'
 
 const log = stampLog(`data:fleet`)
 
@@ -23,7 +22,6 @@ export interface Fleet {
   name: string
   /** Whether this fleet is an immovable base bound to the planet or mobile. */
   is_base: boolean
-  ships: number
   /** Whether this fleet is attacking its target or defending it. */
   is_attacking: boolean
   /** How many ticks in the total trip from home to destination. */
@@ -41,9 +39,6 @@ export interface Fleet {
   planet_id: number
   /** The ID of the planet this fleet is en route to. */
   target_id: number | undefined
-  // Joins.
-  planet?: Planet
-  target?: Planet
 }
 
 export const getFleet =
@@ -67,7 +62,7 @@ export const getFleet =
 
 export const getFleetsForPlanet =
   async (id: number): Promise<Fleet[] | Error> => {
-    const $ = log(`getFleetsByPlanet`)
+    const $ = log(`getFleetsForPlanet`)
 
     const res = await db.get<Fleet>(`
         SELECT
@@ -90,7 +85,7 @@ export const getFleetsForPlanet =
 
 export const createFleet =
   async (planetId: number, name: string): Promise<number | Error> => {
-    const $ = log(`createPlanet`)
+    const $ = log(`createFleet`)
 
     const res = await db.get<number>(`
         INSERT INTO fleets
@@ -121,7 +116,6 @@ export const castFleet =
       index: r.index as number,
       name: r.name as string,
       is_base: r.is_base as boolean,
-      ships: r.ships as number,
       is_attacking: r.is_attacking as boolean,
       warp_time: r.warp_time as number,
       from_home: r.from_home as number,
