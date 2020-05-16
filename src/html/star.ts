@@ -14,7 +14,7 @@ export const render =
         <th>Next</th>
         <td>
           <a href="${star.next_id}.html">${star.next_name}</a>
-          (${star.cluster}:${star.next_index})
+          (<span class="coord">${star.cluster}:${star.next_index}</span>)
         </td>
       </tr>
     `
@@ -23,7 +23,7 @@ export const render =
         <th>Previous</th>
         <td>
           <a href="${star.prev_id}.html">${star.prev_name}</a>
-          (${star.cluster}:${star.prev_index})
+          (<span class="coord">${star.cluster}:${star.prev_index}</span>)
         </td>
       </tr>
     `
@@ -41,13 +41,13 @@ export const render =
           <tbody>
             <tr>
               <th>ID</th>
-              <td class="id">
+              <td class="coord">
                 <a href="../stars/${star.id}.html">/stars/${star.id}.html</a>
               </td>
             </tr>
             <tr>
               <th>Coords</th>
-              <td class="id">
+              <td class="coord">
                 <a href="../clusters/${star.cluster}.html">${star.cluster}</a>:${star.index}
               </td>
             </tr>

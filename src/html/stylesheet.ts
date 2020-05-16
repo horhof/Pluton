@@ -91,6 +91,21 @@ export const template = `
     margin: 0;
   }
 
+  ul.inline {
+    list-style-type: none;
+    margin: 0;
+  }
+
+  ul.inline > li {
+    display: inline;
+    margin: 0;
+    margin-left: 0.5rem;
+  }
+
+  ul.inline > li:first-of-type {
+    margin-left: 0;
+  }
+
   /* Paragraphs. */
 
   p {
@@ -105,13 +120,13 @@ export const template = `
     text-indent: 0;
   }
 
-  .id,
+  .coord,
   code,
   pre {
     background: none;
   }
 
-  .id,
+  .coord,
   code,
   pre {
     font-family: "Courier Prime", "Fantasque Sans Mono", "PT Mono", "Fira Code", monospace;

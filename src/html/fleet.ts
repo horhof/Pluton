@@ -118,7 +118,7 @@ export const render =
           <tbody>
             <tr>
               <th>ID</th>
-              <td class="id">
+              <td class="coord">
                 <a href="../fleets/${fleet.id}.html">/fleets/${fleet.id}.html</a>
               </td>
             </tr>

@@ -15,7 +15,7 @@ export const render =
         <th>Previous</th>
         <td>
           <a href="${planet.prev_id}.html">${planet.prev_name}</a>
-          (${star.cluster}:${star.index}:${planet.prev_index})
+          (<span class="coord">${star.cluster}:${star.index}:${planet.prev_index}</span>)
         </td>
       </tr>
     `
@@ -24,7 +24,7 @@ export const render =
         <th>Next</th>
         <td>
           <a href="${planet.next_id}.html">${planet.next_name}</a>
-          (${star.cluster}:${star.index}:${planet.next_index})
+          (<span class="coord">${star.cluster}:${star.index}:${planet.next_index}</span>)
         </td>
       </tr>
     `
@@ -60,12 +60,14 @@ export const render =
         </table>
       `
     }
-    let manageHtml = userPlanetId !== planet.id ? '' : `
+    let adminHtml = userPlanetId !== planet.id ? '' : `
       <tr>
-          <th>Manage</th>
+          <th>Admin</th>
           <td>
-            <a href="../military.html">Military</a>,
-            <a href="../production.html">Production</a>
+            <ul class="inline">
+              <li><a href="../military.html">Military</a></li>
+              <li><a href="../production.html">Production</a></li>
+            </ul>
           </td>
         </tr>
       `
@@ -76,17 +78,15 @@ export const render =
         <h1>${planet.name}</h1>
         <table class="horz">
           <tbody>
-            <!--
             <tr>
               <th>ID</th>
-              <td class="id">
+              <td class="coord">
                 <a href="../planets/${planet.id}.html">/planets/${planet.id}.html</a>
               </td>
             </tr>
-            -->
             <tr>
               <th>Coords</th>
-              <td class="id">
+              <td class="coord">
                 <a href="../clusters/${star.cluster}.html">${star.cluster}</a>:<a href="../stars/${star.id}.html">${star.index}</a>:${planet.index}
               </td>
             </tr>
@@ -102,7 +102,7 @@ export const render =
             </tr>
             ${prevHtml}
             ${nextHtml}
-            ${manageHtml}
+            ${adminHtml}
           </tbody>
         </table>
       `)

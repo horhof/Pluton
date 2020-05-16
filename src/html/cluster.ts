@@ -37,7 +37,7 @@ export const render =
           <tbody>
             <tr>
               <th>ID</th>
-              <td class="id">
+              <td class="coord">
                 <a href="${idx}.html">/clusters/${idx}.html</a>
               </td>
             </tr>
