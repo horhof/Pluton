@@ -49,7 +49,6 @@ export const render =
       missionHtml = [FleetState.HOME].includes(fleet.state)
         ? `
           <h2>Mission</h2>
-          <p>None.</p>
           ${sendForm}
         `
         : `
