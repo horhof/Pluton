@@ -126,6 +126,7 @@ export const template = `
     background: none;
   }
 
+  .mono,
   .coord,
   code,
   pre {
