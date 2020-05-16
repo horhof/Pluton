@@ -128,15 +128,15 @@ export class Ticker {
       }
       const defenders = defenderRes
 
-      const attackerShipCount = attackers.reduce((sum, a) => sum + a.ships, 0)
-      const defenderShipCount = defenders.reduce((sum, a) => sum + a.ships, 0)
+      const attackerShipCount = 0 //attackers.reduce((sum, a) => sum + a.ships, 0)
+      const defenderShipCount = 0 //defenders.reduce((sum, a) => sum + a.ships, 0)
 
       $(`Attackers=%o Ships=%o`, attackers.map(a => a.name), attackerShipCount)
       $(`Defenders=%o Ships=%o`, defenders.map(a => a.name), defenderShipCount)
 
-      const losers = attackerShipCount > defenderShipCount
-        ? defenders
-        : attackers
+      const losers = defenderShipCount >= attackerShipCount
+        ? attackers
+        : defenders
 
       $(`Setting ships 0 for %o.`, losers)
       const updateRes = await db.query(`
